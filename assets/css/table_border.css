@@ -1,0 +1,25 @@
+.table .table_border_up {
+    border-left-color: #999999;
+    border-top-color: #999999;
+    border-right-color: #999999;
+    border-left-width: 3px;
+    border-top-width: 3px;
+    border-right-width: 3px;
+}
+
+.table .table_border_middle {
+    border-left-color: #999999;
+    border-right-color: #999999;
+    border-left-width: 3px;
+    border-right-width: 3px;
+}
+
+.table .table_border_down {
+    border-left-color: #999999;
+    border-bottom-color: #999999;
+    border-right-color: #999999;
+    border-left-width: 3px;
+    border-bottom-width: 3px;
+    border-right-width: 3px;
+}
+

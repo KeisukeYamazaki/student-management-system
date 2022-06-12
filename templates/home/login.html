@@ -1,0 +1,47 @@
+{% load static %}
+
+{% load widget_tweaks %}
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>聡明舎 生徒管理システム</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static '/css/login_bootstrap.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static '/css/login.css' %}" rel="stylesheet">
+</head>
+
+<body>
+
+<form action="" method="POST" class="form-signin">
+    <div class="text-center mb-4">
+        <h1 class="h3 mb-3 font-weight-normal">聡明舎 生徒管理システム</h1>
+    </div>
+
+    {{ form.non_field_errors }}
+    {% csrf_token %}
+
+    {% for field in form %}
+        <div class="form-label-group">
+            {{ field }}
+            {{ field.errors }}
+        </div>
+    {% endfor %}
+
+    <button style="margin-top: 20px" class="btn btn-lg btn-primary btn-block" type="submit">ログイン</button>
+
+    <p class="mt-5 mb-3 text-muted text-center">&copy; So-mei 2019-2020</p>
+    <input type="hidden" name="next" value="{{ next }}"/>
+</form>
+
+</body>
+</html>

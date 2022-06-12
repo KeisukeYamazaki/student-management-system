@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="page-header">
+                <h1>生徒新規登録</h1>
+            </div>
+            <div class="container-fluid panel panel-container box">
+                <div class="row col-sm-10" style="margin-left: 7px">
+                    <table>
+                        <tr>
+                            <td><span>学年を選択：</span></td>
+                            <td class="col-sm-6">
+                                <select class="form-control" id="grade_select" style="width: 200%">
+                                    <option value="">学年</option>
+                                    <option value="j3"{% if grade == 'j3' %} selected{% endif %}>中３</option>
+                                    <option value="j2"{% if grade == 'j2' %} selected{% endif %}>中２</option>
+                                    <option value="j1"{% if grade == 'j1' %} selected{% endif %}>中１</option>
+                                    <option value="e6"{% if grade == 'e6' %} selected{% endif %}>小６</option>
+                                    <option value="e5"{% if grade == 'e5' %} selected{% endif %}>小５</option>
+                                    <option value="e4"{% if grade == 'e4' %} selected{% endif %}>小４</option>
+                                    <option value="e3"{% if grade == 'e3' %} selected{% endif %}>小３</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <br/><br/><br/>
+                {% if session_data %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row col-sm-12">
+                            <div class="col-lg-7 col-md-9">
+                                <table class="table table-hover">
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">生徒ID</th>
+                                        <td style="text-align: left">
+                                            <input type="text" name="id" id="id_id" class="form-control"
+                                                   style="width: 40%" value="{{ student_id }}">
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">名前
+                                            <span class="label label-danger must-label">必須</span>
+                                        </th>
+                                        <td style="text-align: left">
+                                            <div class="form-group">
+                                                <label style="display: inline; font-weight: normal">姓</label>
+                                                <input type="text" id="id_last_name" name="last_name"
+                                                       value="{{ session_data.last_name }}" class="form-control">
+                                                <label style="display: inline; margin-left: 15px; font-weight: normal">名</label>
+                                                <input type="text" id="id_first_name" name="first_name"
+                                                       value="{{ session_data.first_name }}" class="form-control">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">フリガナ
+                                            <span class="label label-danger must-label">必須</span>
+                                        </th>
+                                        <td style="text-align: left">
+                                            <div class="form-group">
+                                                <label style="display: inline; font-weight: normal">姓</label>
+                                                <input type="text" id="id_last_ruby" name="last_ruby"
+                                                       value="{{ session_data.last_ruby }}" class="form-control">
+                                                <label style="display: inline; margin-left: 15px; font-weight: normal">名</label>
+                                                <input type="text" id="id_first_ruby" name="first_ruby"
+                                                       value="{{ session_data.first_ruby }}" class="form-control">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">学年
+                                            <span class="label label-danger must-label">必須</span>
+                                        </th>
+                                        <td>
+                                            <select name="grade" id="id_grade" class="form-control" required>
+                                                <option value="">学年</option>
+                                                {% for opt_grade in grade_list %}
+                                                    {% if opt_grade == session_data.grade %}
+                                                        <option value="{{ opt_grade }}"
+                                                                selected>{{ opt_grade }}</option>
+                                                    {% else %}
+                                                        <option value="{{ opt_grade }}">{{ opt_grade }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">校舎
+                                            <span class="label label-danger must-label">必須</span>
+                                        </th>
+                                        <td>
+                                            <select name="school" id="id_school" class="form-control">
+                                                <option value="本校"{% if session_data.home_room == '本校' %}
+                                                        selected{% endif %}>本校
+                                                </option>
+                                                <option value="橋戸校"{% if session_data.home_room == '橋戸校' %}
+                                                        selected{% endif %}>橋戸校
+                                                </option>
+                                                <option value="瀬谷校"{% if session_data.home_room == '瀬谷校' %}
+                                                        selected{% endif %}>瀬谷校
+                                                </option>
+                                                <option value="大和校"{% if session_data.home_room == '大和校' %}
+                                                        selected{% endif %}>大和校
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">クラス</th>
+                                        <td>
+                                            <select name="home_room" id="id_home_room" class="form-control">
+                                                <option value="">選択</option>
+                                                {% for home_room in home_rooms %}
+                                                    {% if home_room.0 == session_data.home_room %}
+                                                        <option value="{{ home_room.0 }}"
+                                                                selected>{{ home_room.0 }}</option>
+                                                    {% else %}
+                                                        <option value="{{ home_room.0 }}">{{ home_room.0 }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">学校</th>
+                                        <td style="text-align: left">
+                                            <select name="local_school" id="id_local_school" class="form-control"
+                                                    style="display: inline-block">
+                                                <option value="">選択</option>
+                                                {% for school in local_schools %}
+                                                    {% if school.0 == session_data.local_school %}
+                                                        <option value="{{ school.0 }}" selected>{{ school.0 }}</option>
+                                                    {% else %}
+                                                        <option value="{{ school.0 }}">{{ school.0 }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                            <a href="{% url 'student:create_local_school' %}" class="btn btn-sm btn-success"
+                                               style="margin-left: 30px" target="_blank" id="register_new_school">新しい学校を登録</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">入塾時期</th>
+                                        <td>
+                                            <select name="entry_grade" id="id_entry_grade" class="form-control">
+                                                <option value="">学年</option>
+                                                {% for opt_grade in grade_list %}
+                                                    {% if opt_grade == japanese_grade %}
+                                                        <option value="{{ opt_grade }}"
+                                                                selected>{{ opt_grade }}</option>
+                                                    {% else %}
+                                                        <option value="{{ opt_grade }}">{{ opt_grade }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">誕生日</th>
+                                        <td style="text-align: left">
+                                            <div>
+                                                <input type="hidden" value="{{ session_data.birthday }}" id="bd">
+                                                <div class="form-group form-inline">
+                                                    <select name="year" id="id_year" class="form-control change"
+                                                            style="width: 20%">
+                                                    </select><span class="date_padding"
+                                                                   style="vertical-align:-5px;">年</span>
+                                                    <select name="month" id="id_month" class="form-control change"
+                                                            style="width: 15%">
+                                                    </select><span class="date_padding"
+                                                                   style="vertical-align:-5px;">月</span>
+                                                    <select name="day" id="id_day" class="form-control change"
+                                                            style="width: 15%">
+                                                    </select><span class="date_padding"
+                                                                   style="vertical-align:-5px;">日</span>
+                                                </div>
+                                                <div>
+                                                    <small id="BirthdayHelpBlock" class="form-text text-muted">
+                                                        分からない場合は「---」「---」「---」のまま登録してください</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">部活</th>
+                                        <td>
+                                            <input type="text" id="id_club" name="club"
+                                                   value="{{ session_data.club }}" class="form-control">
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">両親</th>
+                                        <td>
+                                            <input type="text" id="id_parents" name="parents"
+                                                   value="{{ session_data.parents }}" class="form-control">
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">兄弟姉妹</th>
+                                        <td>
+                                            <input type="text" id="id_siblings" name="siblings"
+                                                   value="{{ session_data.siblings }}" class="form-control">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="col-sm-3" style="text-align: left">共有情報</th>
+                                        <td>
+                                            <textarea id="id_info" name="info"
+                                                      value="{{ session_data.info }}" class="form-control"></textarea>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <br/>
+                        <!-- 確認ボタン -->
+                        <button type="submit" class="btn btn-primary btn-lg" name="next" value="confirm">送信</button>
+                    </form>
+                {% elif student_id %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row col-sm-12">
+                            <div class="col-lg-7 col-md-9">
+                                <table class="table table-hover">
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">生徒ID</th>
+                                        <td style="text-align: left">
+                                            <input type="text" name="id" id="id_id" class="form-control"
+                                                   style="width: 40%" value="{{ student_id }}">
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">名前
+                                            <span class="label label-danger must-label">必須</span>
+                                        </th>
+                                        <td style="text-align: left">
+                                            <div class="form-group">
+                                                <label style="display: inline; font-weight: normal">姓</label>
+                                                {{ form.last_name }}
+                                                <label style="display: inline; margin-left: 15px; font-weight: normal">名</label>
+                                                {{ form.first_name }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">フリガナ
+                                            <span class="label label-danger must-label">必須</span>
+                                        </th>
+                                        <td style="text-align: left">
+                                            <div class="form-group">
+                                                <label style="display: inline; font-weight: normal">姓</label>
+                                                {{ form.last_ruby }}
+                                                <label style="display: inline; margin-left: 15px; font-weight: normal">名</label>
+                                                {{ form.first_ruby }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">学年
+                                            <span class="label label-danger must-label">必須</span>
+                                        </th>
+                                        <td>
+                                            <select name="grade" id="id_grade" class="form-control" required>
+                                                <option value="">学年</option>
+                                                {% for opt_grade in grade_list %}
+                                                    {% if opt_grade == japanese_grade %}
+                                                        <option value="{{ opt_grade }}"
+                                                                selected>{{ opt_grade }}</option>
+                                                    {% else %}
+                                                        <option value="{{ opt_grade }}">{{ opt_grade }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">校舎
+                                            <span class="label label-danger must-label">必須</span>
+                                        </th>
+                                        <td>{{ form.school }}</td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">クラス</th>
+                                        <td>
+                                            <select name="home_room" id="id_home_room" class="form-control">
+                                                <option value="">選択</option>
+                                                {% for home_room in home_rooms %}
+                                                    <option value="{{ home_room.0 }}">{{ home_room.0 }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">学校</th>
+                                        <td style="text-align: left">
+                                            <select name="local_school" id="id_local_school" class="form-control"
+                                                    style="display: inline-block">
+                                                <option value="">選択</option>
+                                                {% for school in local_schools %}
+                                                    <option value="{{ school.0 }}">{{ school.0 }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <a href="{% url 'student:create_local_school' %}" class="btn btn-sm btn-success" style="margin-left: 30px"
+                                               target="_blank" id="register_new_school">新しい学校を登録</a>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">入塾時期</th>
+                                        <td>
+                                            <select name="entry_grade" id="id_entry_grade" class="form-control">
+                                                <option value="">学年</option>
+                                                {% for opt_grade in grade_list %}
+                                                    {% if opt_grade == japanese_grade %}
+                                                        <option value="{{ opt_grade }}"
+                                                                selected>{{ opt_grade }}</option>
+                                                    {% else %}
+                                                        <option value="{{ opt_grade }}">{{ opt_grade }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">誕生日</th>
+                                        <td style="text-align: left">
+                                            <div>
+                                                <input type="hidden" value="{{ birthday }}" id="bd">
+                                                <div class="form-group form-inline">
+                                                    <select name="year" id="id_year" class="form-control change"
+                                                            style="width: 20%">
+                                                    </select><span class="date_padding"
+                                                                   style="vertical-align:-5px;">年</span>
+                                                    <select name="month" id="id_month" class="form-control change"
+                                                            style="width: 15%">
+                                                    </select><span class="date_padding"
+                                                                   style="vertical-align:-5px;">月</span>
+                                                    <select name="day" id="id_day" class="form-control change"
+                                                            style="width: 15%">
+                                                    </select><span class="date_padding"
+                                                                   style="vertical-align:-5px;">日</span>
+                                                </div>
+                                                <div>
+                                                    <small id="BirthdayHelpBlock" class="form-text text-muted">
+                                                        分からない場合は「---」「---」「---」のまま登録してください</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">部活</th>
+                                        <td>{{ form.club }}</td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">両親</th>
+                                        <td>{{ form.parents }}</td>
+                                    </tr>
+                                    <tr class="form-height">
+                                        <th class="col-sm-3" style="text-align: left">兄弟姉妹</th>
+                                        <td>{{ form.siblings }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="col-sm-3" style="text-align: left">共有情報</th>
+                                        <td>{{ form.info }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <br/>
+                        <!-- 確認ボタン -->
+                        <button type="submit" class="btn btn-primary btn-lg" name="next" value="confirm">送信</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

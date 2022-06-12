@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="page-header" style="margin-bottom: 15px">
+        <h1>各種登録</h1>
+        <p style="margin-left: 3px">このページで成績、試験結果などを登録できます</p>
+    </div>
+    <div class="row col-sm-10">
+        <div class="btn-group btn-group-justified" role="group" style="margin-bottom: 10px">
+            <a type="button" class="btn btn-primary" href="{% url 'registry:school-record' %}"
+               style="border-color: white">成績
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:regular-exam' %}"
+               style="border-color: white">定期試験
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:practice-exam' %}"
+               style="border-color: white">模擬試験
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:personal' %}"
+               style="border-color: white">個人登録
+            </a>
+        </div>
+    </div>
+    <div class="row col-sm-12" style="margin: 15px 0 0 0" >
+        <!-- 結果表示用 -->
+        <span class="text-info" th:if="${result}" th:text="${result}" style="font-weight: bold"></span><br/>
+    </div>
+
+{% endblock %}

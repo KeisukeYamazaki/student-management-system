@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="page-header">
+        <h1>ホーム</h1>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel panel-default" style="line-height: 2em">
+                <div class="panel-heading"><i class="fa fa-linux "></i>&nbsp; 各クラスの人数(学校別)</div>
+                <div class="panel-body">
+                    <div style="font-weight: bold">〔中学部〕</div>
+                    <table class="table table-bordered table-sm table-hover">
+                        <tr>
+                            <th class="info" rowspan="2">クラス</th>
+                            <th class="info" rowspan="2">合計</th>
+                            <th class="info" colspan="8">中学校</th>
+                        </tr>
+                        <tr>
+                            <th class="info">瀬谷</th>
+                            <th class="info">下中</th>
+                            <th class="info">光丘</th>
+                            <th class="info">東野</th>
+                            <th class="info">南中</th>
+                            <th class="info">大和</th>
+                            <th class="info">岡津</th>
+                            <th class="info">その他</th>
+                        </tr>
+                        {% for home_room, schools in home_rooms_j.items %}
+                            <tr>
+                                <td>{{ home_room }}</td>
+                                {% for school, num in schools.items %}
+                                    {% if school == 'sum' %}
+                                        <td bgcolor="#fafad2">{{ num }}</td>
+                                    {% else %}
+                                        <td>{{ num }}</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div style="font-weight: bold">〔小学部〕</div>
+                    <table class="table table-bordered table-sm table-hover">
+                        <tr>
+                            <th class="info" rowspan="2">クラス</th>
+                            <th class="info" rowspan="2">合計</th>
+                            <th class="info" colspan="8">小学校</th>
+                        </tr>
+                        <tr>
+                            <th class="info">大門</th>
+                            <th class="info">瀬谷<br/>第二</th>
+                            <th class="info">上瀬谷</th>
+                            <th class="info">瀬谷<br/>さくら</th>
+                            <th class="info">瀬谷</th>
+                            <th class="info">相沢</th>
+                            <th class="info">二ツ橋</th>
+                            <th class="info">その他</th>
+                        </tr>
+                        {% for home_room, schools in home_rooms_e.items %}
+                            <tr>
+                                <td>{{ home_room }}</td>
+                                {% for school, num in schools.items %}
+                                    {% if school == 'sum' %}
+                                        <td bgcolor="#fafad2">{{ num }}</td>
+                                    {% else %}
+                                        <td>{{ num }}</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div class="panel panel-default" style="line-height: 2em">
+                <div class="panel-heading"><i class="fa fa-birthday-cake "></i> {{ birthday_title }}</div>
+                <div class="panel-body" style="font-size: large">
+                    {% for student in students %}
+                        <div style="margin-bottom: 5px">
+                            <span style="float: left">{{ student.grade }}</span>
+                            <span style="float: left; margin-left: 40px">{{ student.last_name }} {{ student.first_name }}</span>
+                            <span style="display: block; margin-left: 230px">{{ student.birthday | date:'n月j日' }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="page-header">
+                <h1>生徒情報編集</h1>
+            </div>
+            <div class="container-fluid panel panel-container">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="row col-sm-12">
+                        <ul class="cp_list">
+                            <li>基本情報</li>
+                        </ul>
+                        <div class="col-lg-7 col-md-9">
+                            <table class="table table-hover">
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">生徒ID</th>
+                                    {{ form.id.as_hidden }}
+                                    <td style="text-align: left">{{ object.id }}</td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">名前
+                                        <span class="label label-danger must-label">必須</span>
+                                    </th>
+                                    <td style="text-align: left">
+                                        <div class="form-group">
+                                            <label style="display: inline; font-weight: normal">姓</label>
+                                            {{ form.last_name }}
+                                            <label style="display: inline; margin-left: 15px; font-weight: normal">名</label>
+                                            {{ form.first_name }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">フリガナ
+                                        <span class="label label-danger must-label">必須</span>
+                                    </th>
+                                    <td style="text-align: left">
+                                        <div class="form-group">
+                                            <label style="display: inline; font-weight: normal">姓</label>
+                                            {{ form.last_ruby }}
+                                            <label style="display: inline; margin-left: 15px; font-weight: normal">名</label>
+                                            {{ form.first_ruby }}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">学年
+                                        <span class="label label-danger must-label">必須</span>
+                                    </th>
+                                    <td>{{ form.grade }}</td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">校舎
+                                        <span class="label label-danger must-label">必須</span>
+                                    </th>
+                                    <td>{{ form.school }}</td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">クラス</th>
+                                    <td>{{ form.home_room }}</td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">学校</th>
+                                    <td>{{ form.local_school }}</td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">入塾時期</th>
+                                    <td>{{ form.entry_grade }}</td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">誕生日</th>
+                                    <td style="text-align: left">
+                                        <div>
+                                            <input type="hidden" value="{{ birthday }}" id="bd">
+                                            <div class="form-group form-inline">
+                                                <select name="year" id="id_year" class="form-control change" style="width: 20%">
+                                                </select><span class="date_padding" style="vertical-align:-5px;">年</span>
+                                                <select name="month" id="id_month" class="form-control change" style="width: 15%">
+                                                </select><span class="date_padding" style="vertical-align:-5px;">月</span>
+                                                <select name="day" id="id_day" class="form-control change" style="width: 15%">
+                                                </select><span class="date_padding" style="vertical-align:-5px;">日</span>
+                                            </div>
+                                            <div>
+                                                <small id="BirthdayHelpBlock" class="form-text text-muted">
+                                                    分からない場合は「---」「---」「---」のまま登録してください</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">部活</th>
+                                    <td>{{ form.club }}</td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">両親</th>
+                                    <td>{{ form.parents }}</td>
+                                </tr>
+                                <tr class="form-height">
+                                    <th class="col-sm-3" style="text-align: left">兄弟姉妹</th>
+                                    <td>{{ form.siblings }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-3" style="text-align: left">共有情報</th>
+                                    <td>{{ form.info }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <br/>
+                    <a href="{% url 'student:detail' student.pk %}" class="btn btn-default btn-lg"
+                       style="margin: 0 20px 0 20px; border-color: #9d9d9d">戻る
+                    </a>
+                    <button class="btn btn-primary btn-lg" type="submit">送信</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+.defaultlist
+,.defaultlist li{
+    padding:0px;
+    margin:0px;
+}
+
+.defaultlist li{
+    list-style-type:none !important;
+    list-style-image:none !important;
+    margin: 0px 0px 5px 0px !important;
+}
+
+.list10{
+    counter-reset:li;
+}
+
+.list10 li{
+    position:relative;
+    display: block;
+    padding:12px 0px 10px 30px;
+    margin-left:0px !important;
+}
+
+li.list10-count:after{
+    counter-increment: li;
+    content: counter(li) ".";
+    position: absolute;
+    display: block;
+    text-align: center;
+    font-style: italic;
+    left: 0px;
+    top: -1px;
+    font-size: 30px;
+    color:#bbb;
+    font-family:'Goudy Bookletter 1911',Georgia,serif;
+}

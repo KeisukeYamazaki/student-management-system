@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="page-header" style="margin-bottom: 5px">
+        <h1>クラス管理</h1>
+        <p style="margin-left: 3px">このページでクラスの変更ができます</p>
+    </div>
+    <!-- メッセージフレームワーク -->
+    {% if messages %}
+        <ul class="list-unstyled">
+            {% for message in messages %}
+                <li{% if message.tags %}
+                    class="bg-{% if message.tags == 'error' %}danger{% else %}info{% endif %} alert"{% endif %}>
+                    {{ message }}
+                    <button type="button" class="close" aria-label="Close" data-dismiss="alert">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="row col-sm-12">
+        <table>
+            <tr>
+                <td><span>学年を選択：</span></td>
+                <td class="col-sm-6">
+                    <select class="form-control" id="grade_select" style="width: 200%">
+                        <option value="">学年</option>
+                        <option value="j3"{% if grade == 'j3' %} selected{% endif %}>中３</option>
+                        <option value="j2"{% if grade == 'j2' %} selected{% endif %}>中２</option>
+                        <option value="j1"{% if grade == 'j1' %} selected{% endif %}>中１</option>
+                        <option value="e6"{% if grade == 'e6' %} selected{% endif %}>小６</option>
+                        <option value="e5"{% if grade == 'e5' %} selected{% endif %}>小５</option>
+                        <option value="e4"{% if grade == 'e4' %} selected{% endif %}>小４</option>
+                        <option value="e3"{% if grade == 'e3' %} selected{% endif %}>小３</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% if students %}
+        <div class="panel panel-container col-sm-12" style="margin-top: 15px">
+            <div class="col-lg-5 col-md-7">
+                <form method="post">
+                    {% csrf_token %}
+                    <table class="table table-bordered table-condensed table-hover table-striped"
+                           style="margin-top: 15px">
+                        <tr>
+                            <th class="info">名前</th>
+                            <th class="info">クラス</th>
+                        </tr>
+                        {% for student in students %}
+                            <tr>
+                                <td>{{ student.last_name }} {{ student.first_name }}</td>
+                                <td>
+                                    <div class="form-group">
+                                        <select id="id_home_room" name="home_room" class="form-control"
+                                                style="width: 70%; display: unset">
+                                            <option value="">クラス</option>
+                                            {% for home_room in home_rooms %}
+                                                {% if student.home_room == home_room.0 %}
+                                                    <option value="{{ home_room.0 }}"
+                                                            selected>{{ home_room.0 }}</option>
+                                                {% else %}
+                                                    <option value="{{ home_room.0 }}">{{ home_room.0 }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <input type="hidden" name="id" value="{{ student.id }}">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <br/>
+                    <button type="submit" class="btn btn-lg btn-primary" name="change">変更</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

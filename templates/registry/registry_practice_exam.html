@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="page-header" style="margin-bottom: 15px">
+        <h1>各種登録</h1>
+        <p style="margin-left: 3px">このページで成績、試験結果などを登録できます</p>
+    </div>
+    {% if messages %}
+        <div class="row col-sm-12">
+            <ul class="list-unstyled">
+                {% for message in messages %}
+                    <li{% if message.tags %}
+                        class="bg-{% if message.tags == 'error' %}danger{% else %}info{% endif %} alert"{% endif %}>
+                        {{ message }}
+                        <button type="button" class="close" aria-label="Close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="row col-sm-10">
+        <div class="btn-group btn-group-justified" role="group" style="margin-bottom: 10px">
+            <a type="button" class="btn btn-primary" href="{% url 'registry:school-record' %}"
+               style="border-color: white">成績
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:regular-exam' %}"
+               style="border-color: white">定期試験
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:practice-exam' %}"
+               style="border-color: white">模擬試験
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:personal' %}"
+               style="border-color: white">個人登録
+            </a>
+        </div>
+    </div>
+    <div class="row col-sm-10" style="margin-top: 10px">
+        <div>【登録方法の選択】 どの模擬試験を登録しますか？</div>
+        <div style="margin-top: 10px">
+            <label class="radio-inline radio_text" style="margin-left: 7px">
+                <input type="radio" name="practice_select" id="zenken"> 全県模試
+            </label>
+            <label class="radio-inline radio_text" style="margin-left: 5px">
+                <input type="radio" name="practice_select" id="not_zenken"> 全県模試以外(工事中)
+            </label>
+        </div>
+    </div>
+    {% if kind == 'zenken' %}
+        <form method="post">
+            <div class="panel panel-container col-sm-12" style="margin-top: 15px; padding: 15px 25px">
+                <p style="font-size: large">全県模試の登録</p>
+                <div style="margin-bottom: 10px; color: #005cbf">登録されていない生徒のデータは登録できません</div>
+                <div style="margin-bottom: 17px">学年・実施月・校舎を選択してください</div>
+                <table style="margin-left: 15px">
+                    <tr height="50px">
+                        <td style="font-weight: bold">学年：</td>
+                        <td>
+                            <select class="form-control practice_select" id="birth_year" name="birth_year" required
+                                    style="width: 110px; margin-left: 10px">
+                                <option value="">学年</option>
+                                <option value="{{ third_grade_birth_year }}"
+                                        {% if birth_year == third_grade_birth_year %} selected{% endif %}>中３
+                                </option>
+                                <option value="{{ second_grade_birth_year }}"
+                                        {% if birth_year == second_grade_birth_year %} selected{% endif %}>中２
+                                </option>
+                                <option value="{{ first_grade_birth_year }}"
+                                        {% if birth_year == first_grade_birth_year %} selected{% endif %}>中１
+                                </option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <p style="font-size: small; margin-left: 12px">
+                                ※ データを取得する生徒の<u>現在の登録学年</u>を選択してください。
+                            </p>
+                            <p style="font-size: small; margin-left: 12px">
+                                　例) 現在の登録学年が「中３」の生徒が「中２」の「３月」の模試を受けた場合：
+                            </p>
+                            <p style="font-size: small; margin-left: 12px">
+                                　　→ 学年「中３」、実施月「３月」
+                            </p>
+                        </td>
+                    </tr>
+                    <tr height="50px">
+                        <td style="font-weight: bold">実施月：</td>
+                        <td>
+                            <select class="form-control practice_select" id="month" name="month" required
+                                    style="width: 110px; margin-left: 10px">
+                                <option value="">実施月</option>
+                                <option value="7"{% if month == '7' %} selected{% endif %}>７月</option>
+                                <option value="8"{% if month == '8' %} selected{% endif %}>８月</option>
+                                <option value="10"{% if month == '10' %} selected{% endif %}>10月</option>
+                                <option value="12"{% if month == '12' %} selected{% endif %}>12月</option>
+                                <option value="1"{% if month == '1' %} selected{% endif %}>１月</option>
+                                <option value="3"{% if month == '3' %} selected{% endif %}>３月</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr height="50px">
+                        <td style="font-weight: bold">校舎：</td>
+                        <td>
+                            <select class="form-control practice_select" id="school" name="school" required
+                                    style="width: 110px; margin-left: 10px">
+                                <option value="">校舎</option>
+                                <option value="hashido"{% if school == 'hashido' %} selected{% endif %}>橋戸校</option>
+                                <option value="seya"{% if school == 'seya' %} selected{% endif %}>瀬谷校</option>
+                                <option value="yamato"{% if school == 'yamato' %} selected{% endif %}>大和校</option>
+                                <option value="honko"{% if school == 'honko' %} selected{% endif %}>本校</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <p style="color: #bd2130; margin: 15px 0 0 13px; display: none" id="error">
+                    【入力エラー】学年、実施月、校舎のすべてを選択してください。
+                </p>
+                <a class="btn btn-primary" id="get_practice_data" href="" style="margin: 20px 0 15px 15px">データの取得</a>
+                {% if practice_data %}
+                    <div>
+                        <p style="margin-top: 20px">＜取得したデータ＞</p>
+                        <table class="table table-bordered table-hover table-sm">
+                            <tr>
+                                <th rowspan="2" class="info">名前</th>
+                                <th colspan="7" class="info">点数</th>
+                                <th colspan="7" class="info">偏差値</th>
+                                <th colspan="3" class="info">志望校 公立</th>
+
+                            </tr>
+                            <tr style="font-size: small">
+                                <th class="info">英語</th>
+                                <th class="info">数学</th>
+                                <th class="info">国語</th>
+                                <th class="info">理科</th>
+                                <th class="info">社会</th>
+                                <th class="info">３科</th>
+                                <th class="info">５科</th>
+                                <th class="info">英語</th>
+                                <th class="info">数学</th>
+                                <th class="info">国語</th>
+                                <th class="info">理科</th>
+                                <th class="info">社会</th>
+                                <th class="info">３科</th>
+                                <th class="info">５科</th>
+                                <th class="info">第一志望</th>
+                                <th class="info">第二志望</th>
+                                <th class="info">第三志望</th>
+                            </tr>
+                            {% for data in practice_data %}
+                                <tr>
+                                    <td>{{ data.name }}</td>
+                                    <td>{{ data.english_score }}</td>
+                                    <td>{{ data.math_score }}</td>
+                                    <td>{{ data.japanese_score }}</td>
+                                    <td>{{ data.science_score }}</td>
+                                    <td>{{ data.social_score }}</td>
+                                    <td bgcolor="#fafad2">{{ data.sum_three }}</td>
+                                    <td bgcolor="#fafad2">{{ data.sum_all }}</td>
+                                    <td>{{ data.english_deviation }}</td>
+                                    <td>{{ data.math_deviation }}</td>
+                                    <td>{{ data.japanese_deviation }}</td>
+                                    <td>{{ data.science_deviation }}</td>
+                                    <td>{{ data.social_deviation }}</td>
+                                    <td bgcolor="#fafad2">{{ data.dev_three }}</td>
+                                    <td bgcolor="#fafad2">{{ data.dev_all }}</td>
+                                    <td>{{ data.first_choice }}</td>
+                                    <td>{{ data.second_choice }}</td>
+                                    <td>{{ data.third_choice }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                        <p>この内容で登録する場合は「登録」を押してください。</p>
+                        <button class="btn btn-primary" type="submit" style="margin: 15px 0 15px 0px">登録</button>
+                        {% csrf_token %}
+                    </div>
+                {% endif %}
+            </div>
+        </form>
+    {% endif %}
+    {#    <div class="panel panel-container col-sm-10" style="margin-top: 15px">#}
+    {#        <p style="font-size: large">ファイルでの登録</p>#}
+    {#        <p style="color: #444444; margin: 10px 0 10px 0px">#}
+    {#            <strong>１</strong>．ファイルの種類を選んで下さい。</p>#}
+    {#        <p style="color: #444444; margin: 10px 0 10px 0px">#}
+    {#            <strong>２</strong>．ファイルを下のボックスにアップロードしてください。</p>#}
+    {#        <p style="color: #444444; margin: 10px 0 30px 0px">#}
+    {#            <strong>３</strong>．登録ボタンを押してください。#}
+    {#        </p>#}
+    {#        <form method="post" enctype="multipart/form-data" th:action="@{/practiceFileUpload}">#}
+    {#            <div style="display: flex">#}
+    {#                <div class="form-group">#}
+    {#                    <select class="form-control" id="fileType" name="fileType" required>#}
+    {#                        <option value="">ファイルの種類</option>#}
+    {#                        <option value="zenken">全県模試エクセル</option>#}
+    {#                        <option value="ikushin">育伸社CSV</option>#}
+    {#                    </select>#}
+    {#                </div>#}
+    {#            </div>#}
+    {#            <div>#}
+    {#                <div class="input-group col-sm-5">#}
+    {#                    <input id="upload" type="file" name="file" style="display:none">#}
+    {#                    <input type="text" id="upload_file" name="upload_file" class="form-control"#}
+    {#                           placeholder="select file..." readonly>#}
+    {#                    <span class="input-group-btn">#}
+    {#                    <button type="button" class="btn btn-default btn-sm" id="button"#}
+    {#                            style="height: 34px; border-color: #9d9d9d">ファイル選択</button>#}
+    {#                </span>#}
+    {#                </div>#}
+    {#                <button type="submit" class="btn btn-primary" style="margin: 40px 0 0 0px">登録#}
+    {#                </button>#}
+    {#            </div>#}
+    {#        </form>#}
+    {#    </div>#}
+
+{% endblock %}

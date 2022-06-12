@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>500 Internal Server Error</title>
+    <style media="screen and (max-width: 500px)">
+        h1 {
+            font-size: 24px;
+        }
+        body .error-1 {
+            font-size: 17px;
+        }
+        body .error-2 {
+            font-size: 24px;
+        }
+        body .error-3 {
+            font-size: 17px;
+        }
+    </style>
+    <style>
+        html {
+            font-family: 'Hiragino Kaku Gothic ProN', Meiryo, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+        }
+        body {
+            width: 100%;
+            max-width: 640px;
+            padding: 10px;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -o-box-sizing: border-box;
+            -ms-box-sizing: border-box;
+            margin: 0 auto;
+        }
+
+        .error {
+            padding: 1em;
+            background: #fafaff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            line-height: 1.7;
+            word-wrap: break-word;
+            margin-bottom: 3em;
+        }
+        .error-1 {
+            font-size: 25px;
+            color: #ff0000;
+        }
+        .error-2 {
+            font-size: 35px;
+            margin: 0.8em 0;
+        }
+        .error-3 {
+            font-size: 22px;
+            margin-bottom: 1em;
+            color: #808080;
+        }
+        .error-4 {
+            font-size: 18px;
+            color: #5a6268;
+            text-align: center;
+        }
+        .button {
+            width: 150px;
+            height: 45px;
+            text-align: center;
+            text-decoration: none;
+            line-height: 44px;
+            outline: none;
+        }
+        .button::before,
+        .button::after {
+            position: absolute;
+            z-index: -1;
+            display: block;
+            content: '';
+        }
+        .button,
+        .button::before,
+        .button::after {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            -webkit-transition: all .3s;
+            transition: all .3s;
+        }
+        .button {
+            background-color: #0062cc;
+            color: #fff;
+            border-radius: 5px;
+        }
+        .button:hover {
+            letter-spacing: 5px;
+        }
+        a {
+            margin:0 auto;
+            display:block;
+            width:100px;
+        }
+    </style>
+
+</head>
+<body>
+<div>
+    <h1>500 内部サーバーエラー</h1>
+    <div class="error">
+        <div class="error-1">内部で不具合が発生しています</div>
+
+        <div class="error-2">500 Internal Server Error</div>
+
+        <div class="error-3">現在メンテナンス中であるか、プログラム上の問題が発生している可能性があります。</div>
+    </div>
+    <p class="error-4">お手数おかけして申し訳ありません。</p>
+    <p class="error-4">下のボタンからホームへお戻りください。</p>
+    <a class="button" href="https://somei-student-management.tk/">ホームへ</a>
+</div>
+</body>
+</html>

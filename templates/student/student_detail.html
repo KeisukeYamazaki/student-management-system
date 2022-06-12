@@ -1,0 +1,564 @@
+{% extends 'base.html' %}
+
+{% load widget_tweaks %}
+
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="page-header">
+                <h1>生徒詳細</h1>
+            </div>
+
+            <!-- メッセージフレームワーク -->
+            {% if messages %}
+                <ul class="list-unstyled">
+                    {% for message in messages %}
+                        <li{% if message.tags %}
+                            class="bg-{% if message.tags == 'error' %}danger{% else %}info{% endif %} alert"{% endif %}>
+                            {{ message }}
+                            <button type="button" class="close" aria-label="Close" data-dismiss="alert">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="container-fluid panel panel-container" style="padding: 5px 30px 30px 30px">
+                <div class="row">
+                    <ul class="cp_list">
+                        <li>基本情報</li>
+                    </ul>
+                    <div class="col-lg-7 col-md-9">
+                        <table class="table table-sm table-bordered table-hover table-condensed">
+                            <tr>
+                                <th class="info" style="font-size: small">ID</th>
+                                <th class="info" style="font-size: small">名前</th>
+                                <th class="info" style="font-size: small">学年</th>
+                                <th class="info" style="font-size: small">校舎</th>
+                                <th class="info" style="font-size: small">学校</th>
+                            </tr>
+                            <tr>
+                                <td>{{ object.id }}</td>
+                                <td>{{ object.last_name }} {{ object.first_name }}（{{ object.last_ruby }} {{ object.first_ruby }}）</td>
+                                <td>{{ object.grade }}</td>
+                                <td>{{ object.school }}</td>
+                                <td>{{ object.local_school }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-lg-7 col-md-9">
+                        <table class="table table-bordered table-hover table-condensed">
+                            <tr>
+                                <th class="info" style="font-size: small">クラス</th>
+                                <th class="info" style="font-size: small">入塾時期</th>
+                                <th class="info" style="font-size: small">誕生日</th>
+                                <th class="info" style="font-size: small">部活</th>
+                            </tr>
+                            <tr>
+                                <td>{{ object.home_room | default:"" }}</td>
+                                <td>{{ object.entry_grade | default:"" }}</td>
+                                <td>{{ object.birthday | default:"" }}</td>
+                                <td>{{ object.club | default:"" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-lg-7 col-md-9">
+                        <table class="table table-bordered table-hover table-condensed">
+                            <tr>
+                                <th class="info col-sm-2">両親</th>
+                                <th class="info col-sm-2">兄弟姉妹</th>
+                            </tr>
+                            <tr>
+                                <td>{{ object.parents | default:"" }}</td>
+                                <td>{{ object.siblings | default:"" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-lg-7 col-md-9">
+                        <table class="table table-bordered table-hover table-condensed">
+                            <tr>
+                                <th class="info col-sm-8">生徒情報</th>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top; text-align: left">
+                                    {{ student.info | linebreaksbr | default:"" }}
+                                </td>
+                            </tr>
+                        </table>
+                        <a class="btn btn-primary" style="margin-bottom: 20px"
+                           href="{% url 'student:update' student.pk %}">基本情報を編集</a>
+                    </div>
+                    {% if student.grade == '中１' or student.grade == '中２' or student.grade == '中３' %}
+                        <div>
+                            <div class="row col-sm-12">
+                                <ul class="cp_list">
+                                    <li>内申</li>
+                                </ul>
+                                <div class="col-sm-10">
+                                    {% for grade, records in school_records.items %}
+                                        {% if records %}
+                                            <div>
+                                                <p style="font-size: medium"><{{ grade }}></p>
+                                                <table class="table table-bordered table-hover table-condensed">
+                                                    <tr>
+                                                        <th class="info col-sm-2">時期</th>
+                                                        <th class="info col">英語</th>
+                                                        <th class="info col">数学</th>
+                                                        <th class="info col">国語</th>
+                                                        <th class="info col">理科</th>
+                                                        <th class="info col">社会</th>
+                                                        <th class="info col table_border_up">５科</th>
+                                                        <th class="info col">音楽</th>
+                                                        <th class="info col">美術</th>
+                                                        <th class="info col">保体</th>
+                                                        <th class="info col">技家</th>
+                                                        <th class="info col table_border_up">９科</th>
+                                                    </tr>
+                                                    {% for record in records %}
+                                                        <tr>
+                                                            <td>{{ record.term_name.term_name }}</td>
+                                                            <td>{{ record.english }}</td>
+                                                            <td>{{ record.math }}</td>
+                                                            <td>{{ record.japanese }}</td>
+                                                            <td>{{ record.science }}</td>
+                                                            <td>{{ record.social_studies }}</td>
+                                                            {% if forloop.last %}
+                                                                <td class="table_border_down">{{ record.sum_five }}</td>
+                                                            {% else %}
+                                                                <td class="table_border_middle">{{ record.sum_five }}</td>
+                                                            {% endif %}
+                                                            <td>{{ record.music }}</td>
+                                                            <td>{{ record.art }}</td>
+                                                            <td>{{ record.pe }}</td>
+                                                            <td>{{ record.tech_home }}</td>
+                                                            {% if forloop.last %}
+                                                                <td class="table_border_down">{{ record.sum_all }}</td>
+                                                            {% else %}
+                                                                <td class="table_border_middle">{{ record.sum_all }}</td>
+                                                            {% endif %}
+                                                        </tr>
+                                                    {% endfor %}
+                                                </table>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="row col-sm-12">
+                                <ul class="cp_list">
+                                    <li>定期試験</li>
+                                </ul>
+                                <div class="col-sm-10">
+                                    {% for grade, regulars in regular_exams.items %}
+                                        {% if regulars %}
+                                            <div>
+                                                <p style="font-size: medium">＜{{ grade }}＞</p>
+                                                <table class="table table-bordered table-hover table-condensed">
+                                                    <tr>
+                                                        <th class="info col-sm-2">時期</th>
+                                                        <th class="info col">英語</th>
+                                                        <th class="info col">数学</th>
+                                                        <th class="info col">国語</th>
+                                                        <th class="info col">理科</th>
+                                                        <th class="info col">社会</th>
+                                                        <th class="info col table_border_up">５科</th>
+                                                        <th class="info col">音楽</th>
+                                                        <th class="info col">美術</th>
+                                                        <th class="info col">保体</th>
+                                                        <th class="info col">技術</th>
+                                                        <th class="info col">家庭</th>
+                                                    </tr>
+                                                    {% for regular in regulars %}
+                                                        <tr>
+                                                            <td>{{ regular.regular_id.name | default:'' }}</td>
+                                                            <td>{{ regular.english | default:'' }}</td>
+                                                            <td>{{ regular.math | default:'' }}</td>
+                                                            <td>{{ regular.japanese | default:'' }}</td>
+                                                            <td>{{ regular.science | default:'' }}</td>
+                                                            <td>{{ regular.social_studies | default:'' }}</td>
+                                                            {% if forloop.last %}
+                                                                <td class="table_border_down">{{ regular.sum_five | default:'' }}</td>
+                                                            {% else %}
+                                                                <td class="table_border_middle">{{ regular.sum_five | default:'' }}</td>
+                                                            {% endif %}
+                                                            <td>{{ regular.music | default:'' }}</td>
+                                                            <td>{{ regular.art | default:'' }}</td>
+                                                            <td>{{ regular.pe | default:'' }}</td>
+                                                            <td>{{ regular.tech | default:'' }}</td>
+                                                            <td>{{ regular.home | default:'' }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </table>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="row col-sm-12">
+                                <ul class="cp_list">
+                                    <li>模擬試験</li>
+                                </ul>
+                                <div class="col-sm-10">
+                                    {% for grade, practices in practice_exams.items %}
+                                        {% if practices %}
+                                            <div>
+                                                <p style="font-size: medium">＜{{ grade }}＞</p>
+                                                <table class="table table-bordered table-hover table-condensed">
+                                                    <tr>
+                                                        <th class="info col-sm-1">実施月</th>
+                                                        <th class="info col">英語</th>
+                                                        <th class="info col">数学</th>
+                                                        <th class="info col">国語</th>
+                                                        <th class="info col">理科</th>
+                                                        <th class="info col">社会</th>
+                                                        <th class="info col">３科</th>
+                                                        <th class="info col table_border_up">５科</th>
+                                                        <th class="info col">３科<br/>偏差</th>
+                                                        <th class="info col table_border_up">５科<br/>偏差</th>
+                                                        <th class="info col">英語<br/>偏差</th>
+                                                        <th class="info col">数学<br/>偏差</th>
+                                                        <th class="info col">国語<br/>偏差</th>
+                                                        <th class="info col">理科<br/>偏差</th>
+                                                        <th class="info col">社会<br/>偏差</th>
+                                                    </tr>
+                                                    {% for practice in practices %}
+                                                        <tr>
+                                                            <td>{{ practice.month.name }}</td>
+                                                            <td>{{ practice.english_score | default:'' }}</td>
+                                                            <td>{{ practice.math_score | default:'' }}</td>
+                                                            <td>{{ practice.japanese_score | default:'' }}</td>
+                                                            <td>{{ practice.science_score | default:'' }}</td>
+                                                            <td>{{ practice.social_score | default:'' }}</td>
+                                                            <td>{{ practice.sum_three | default:'' }}</td>
+                                                            {% if forloop.last %}
+                                                                <td class="table_border_down">{{ practice.sum_all | default:'' }}</td>
+                                                            {% else %}
+                                                                <td class="table_border_middle">{{ practice.sum_all | default:'' }}</td>
+                                                            {% endif %}
+                                                            <td>{{ practice.dev_three }}</td>
+                                                            {% if forloop.last %}
+                                                                <td class="table_border_down">{{ practice.dev_five | default:'' }}</td>
+                                                            {% else %}
+                                                                <td class="table_border_middle">{{ practice.dev_five | default:'' }}</td>
+                                                            {% endif %}
+                                                            <td>{{ practice.english_deviation | default:'' }}</td>
+                                                            <td>{{ practice.math_deviation | default:'' }}</td>
+                                                            <td>{{ practice.japanese_deviation | default:'' }}</td>
+                                                            <td>{{ practice.science_deviation | default:'' }}</td>
+                                                            <td>{{ practice.social_deviation | default:'' }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </table>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <div class="row col-sm-12">
+                                    <ul class="cp_list">
+                                        <li>進路関係</li>
+                                        <span style="float: right"
+                                              id="futurePathUpdate">最終更新日：{{ future_path.record_date }}</span>
+                                    </ul>
+                                    <div class="col-sm-10">
+                                        <p style="font-size: medium">＜入試内申＞</p>
+                                        <table class="table table-bordered table-hover table-condensed">
+                                            <tr>
+                                                <th class="info col-sm-1">/45</th>
+                                                <th class="info col-sm-1">/135</th>
+                                                <th class="info col-sm-1">/25</th>
+                                                <th class="info col-sm-1">/50</th>
+                                                <th class="info col-sm-1">/75</th>
+                                                <th class="info col-sm-1">/15</th>
+                                                <th class="info col-sm-1">/30</th>
+                                            </tr>
+                                            <tr>
+                                                <td>{{ exam_record.four_five }}</td>
+                                                <td>{{ exam_record.one_three_five }}</td>
+                                                <td>{{ exam_record.two_five }}</td>
+                                                <td>{{ exam_record.five_zero }}</td>
+                                                <td>{{ exam_record.seven_five }}</td>
+                                                <td>{{ exam_record.one_five }}</td>
+                                                <td>{{ exam_record.three_zero }}</td>
+                                            </tr>
+                                        </table>
+                                        <div class="row col-sm-12">
+                                            <p style="font-size: medium">＜志望校＞</p>
+                                            <table class="table table-bordered table-hover" style="margin-top: 5px">
+                                                <tr>
+                                                    <th class="col-sm-2 col-xs-3"
+                                                        style="border-top-color: white;border-left-color: white"></th>
+                                                    <td class="col-sm-2" style="font-size: small; font-weight: bold">
+                                                        高校
+                                                        <div style="margin-top: 2px">
+                                                            <button class="mini act" id="ave_all"
+                                                                    onclick="this.blur();">平均
+                                                            </button>
+                                                            <button class="mini" id="late_all" onclick="this.blur();">直近
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                    <td class="col-sm-2" style="font-size: small; font-weight: bold">
+                                                        必要内申<br><small>(/135)</small>
+                                                    </td>
+                                                    <td class="col-sm-2" style="font-size: small; font-weight: bold">
+                                                        中位合格点数<br><small>(/500)</small>
+                                                    </td>
+                                                    <td style="border-left-color: white; font-weight: bold;
+                                                        font-size: small" class="col-sm-2">
+                                                        ボーダー点数<br><small>(/500)</small>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="info col-sm-2 col-xs-3">第１志望</th>
+                                                    <td class="col-sm-3"
+                                                        style="border-right-width: 1px;border-right: #999999">
+                                                        {% if future_path.first_choice.name %}
+                                                            {{ future_path.first_choice.name }}
+                                                            <div style="margin-top: 2px">
+                                                                <button class="mini act" id="ave1"
+                                                                        onclick="this.blur();">平均
+                                                                </button>
+                                                                <button class="mini" id="late1" onclick="this.blur();">
+                                                                    直近
+                                                                </button>
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="col-sm-2" id="record1"></td>
+                                                    <td class="col-sm-2" id="score1"></td>
+                                                    <td class="col-sm-2" id="border1"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="info col-sm-2 col-xs-3">第２志望</th>
+                                                    <td class="col-sm-3"
+                                                        style="border-right-width: 1px;border-right: #999999">
+                                                        {% if future_path.second_choice.name %}
+                                                            {{ future_path.second_choice.name }}
+                                                            <div style="margin-top: 2px">
+                                                                <button class="mini act" id="ave2"
+                                                                        onclick="this.blur();">平均
+                                                                </button>
+                                                                <button class="mini" id="late2"
+                                                                        onclick="this.blur();">直近
+                                                                </button>
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="col-sm-2" id="record2"></td>
+                                                    <td class="col-sm-2" id="score2"></td>
+                                                    <td class="col-sm-2" id="border2"></td>
+                                                </tr>
+                                                <tr>
+                                                    <th class="info col-sm-2 col-xs-3">第３志望</th>
+                                                    <td class="col-sm-3"
+                                                        style="border-right-width: 1px;border-right: #999999">
+                                                        {% if future_path.third_choice.name %}
+                                                            {{ future_path.third_choice.name }}
+                                                            <div style="margin-top: 2px">
+                                                                <button class="mini act" id="ave3"
+                                                                        onclick="this.blur();">平均
+                                                                </button>
+                                                                <button class="mini" id="late3" onclick="this.blur();">
+                                                                    直近
+                                                                </button>
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="col-sm-2" id="record3"></td>
+                                                    <td class="col-sm-2" id="score3"></td>
+                                                    <td class="col-sm-2" id="border3"></td>
+                                                </tr>
+                                            </table>
+
+                                            <!-- 平均内申-->
+                                            <input type="hidden" id="record_ave1"
+                                                   value="{{ public_schools.first.ave.school_record }}">
+                                            <input type="hidden" id="record_late1"
+                                                   value="{{ public_schools.first.late.school_record }}">
+                                            <input type="hidden" id="record_ave2"
+                                                   value="{{ public_schools.second.ave.school_record }}">
+                                            <input type="hidden" id="record_late2"
+                                                   value="{{ public_schools.second.late.school_record }}">
+                                            <input type="hidden" id="record_ave3"
+                                                   value="{{ public_schools.third.ave.school_record }}">
+                                            <input type="hidden" id="record_late3"
+                                                   value="{{ public_schools.third.late.school_record }}">
+                                            <!-- 平均得点-->
+                                            <input type="hidden" id="score_ave1"
+                                                   value="{{ public_schools.first.ave.exam_score }}">
+                                            <input type="hidden" id="score_late1"
+                                                   value="{{ public_schools.first.late.exam_score }}">
+                                            <input type="hidden" id="score_ave2"
+                                                   value="{{ public_schools.second.ave.exam_score }}">
+                                            <input type="hidden" id="score_late2"
+                                                   value="{{ public_schools.second.late.exam_score }}">
+                                            <input type="hidden" id="score_ave3"
+                                                   value="{{ public_schools.third.ave.exam_score }}">
+                                            <input type="hidden" id="score_late3"
+                                                   value="{{ public_schools.third.late.exam_score }}">
+                                            <!-- ボーダー得点-->
+                                            <input type="hidden" id="border_ave1"
+                                                   value="{{ public_schools.first.ave.border }}">
+                                            <input type="hidden" id="border_late1"
+                                                   value="{{ public_schools.first.late.border }}">
+                                            <input type="hidden" id="border_ave2"
+                                                   value="{{ public_schools.second.ave.border }}">
+                                            <input type="hidden" id="border_late2"
+                                                   value="{{ public_schools.second.late.border }}">
+                                            <input type="hidden" id="border_ave3"
+                                                   value="{{ public_schools.third.ave.border }}">
+                                            <input type="hidden" id="border_late3"
+                                                   value="{{ public_schools.third.late.border }}">
+
+                                            <!-- 実際の成績を踏まえた平均内申(あといくつか)-->
+                                            <input type="hidden" id="record_calc_ave1"
+                                                   value="{{ public_schools_calc.first.ave.school_record }}">
+                                            <input type="hidden" id="record_calc_late1"
+                                                   value="{{ public_schools_calc.first.late.school_record }}">
+                                            <input type="hidden" id="record_calc_ave2"
+                                                   value="{{ public_schools_calc.second.ave.school_record }}">
+                                            <input type="hidden" id="record_calc_late2"
+                                                   value="{{ public_schools_calc.second.late.school_record }}">
+                                            <input type="hidden" id="record_calc_ave3"
+                                                   value="{{ public_schools_calc.third.ave.school_record }}">
+                                            <input type="hidden" id="record_calc_late3"
+                                                   value="{{ public_schools_calc.third.late.school_record }}">
+                                            <!-- 実際の成績を踏まえた平均得点-->
+                                            <input type="hidden" id="score_calc_ave1"
+                                                   value="{{ public_schools_calc.first.ave.exam_score }}">
+                                            <input type="hidden" id="score_calc_late1"
+                                                   value="{{ public_schools_calc.first.late.exam_score }}">
+                                            <input type="hidden" id="score_calc_ave2"
+                                                   value="{{ public_schools_calc.second.ave.exam_score }}">
+                                            <input type="hidden" id="score_calc_late2"
+                                                   value="{{ public_schools_calc.second.late.exam_score }}">
+                                            <input type="hidden" id="score_calc_ave3"
+                                                   value="{{ public_schools_calc.third.ave.exam_score }}">
+                                            <input type="hidden" id="score_calc_late3"
+                                                   value="{{ public_schools_calc.third.late.exam_score }}">
+                                            <!-- 実際の成績を踏まえたボーダー得点-->
+                                            <input type="hidden" id="border_calc_ave1"
+                                                   value="{{ public_schools_calc.first.ave.border }}">
+                                            <input type="hidden" id="border_calc_late1"
+                                                   value="{{ public_schools_calc.first.late.border }}">
+                                            <input type="hidden" id="border_calc_ave2"
+                                                   value="{{ public_schools_calc.second.ave.border }}">
+                                            <input type="hidden" id="border_calc_late2"
+                                                   value="{{ public_schools_calc.second.late.border }}">
+                                            <input type="hidden" id="border_calc_ave3"
+                                                   value="{{ public_schools_calc.third.ave.border }}">
+                                            <input type="hidden" id="border_calc_late3"
+                                                   value="{{ public_schools_calc.third.late.border }}">
+
+                                            <p style="font-size: smaller; margin-bottom: 0px">※ 上記第１〜第３志望はすべて公立高校です。</p>
+                                            <p style="font-size: smaller; margin-top: 3px">
+                                                ※ ボタンについて:「直近」は直近の入試の数値を、「平均」は過去３年間の平均の数値を表示します。
+                                                選択されているのは濃いほうです。
+                                            </p>
+                                            <div class="row col-sm-12 align">
+                                                <table class="table table-bordered table-hover"
+                                                       style="margin-top: 20px">
+                                                    <tr>
+                                                        <td style="border-top-color: white; border-left-color: white"></td>
+                                                        <td class="col-lg-1 col-sm-2 col-xs-3" style="font-size: small; font-weight: bold">
+                                                            高校
+                                                        </td>
+                                                        <td style="font-size: small; font-weight: bold">併願で必要な数値</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="info col-sm-2 col-xs-3" rowspan="3">私立高校</th>
+                                                        <td class="col-sm-3 showprivateSchool1" style="height: 27px"
+                                                            id="showprivateSchool1">
+                                                            {{ future_path.private_school1.name }} {{ future_path.private_school1.course }}
+                                                        </td>
+                                                        <td class="col-sm-6">
+                                                            {{ future_path.private_school1.standard_score | linebreaksbr}}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="height: 27px" class="showprivateSchool2 col-lg-2"
+                                                            id="showprivateSchool2">
+                                                            {{ future_path.private_school2.name }} {{ future_path.private_school2.course }}
+                                                        </td>
+                                                        <td class="col-sm-6">
+                                                            {{ future_path.private_school2.standard_score | linebreaksbr }}
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="height: 27px" class="showprivateSchool3"
+                                                            id="showprivateSchool3">
+                                                            {{ future_path.private_school3.name }} {{ future_path.private_school3.course }}
+                                                        </td>
+                                                        <td class="col-sm-6">
+                                                            {{ future_path.private_school3.standard_score | linebreaksbr }}
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="row col-sm-12">
+                                            <table class="table table-bordered table-hover table-condensed">
+                                                <tr>
+                                                    <th class="info">その他</th>
+                                                </tr>
+                                                <tr>
+                                                    <td height="200px" style="vertical-align: top; text-align: left">
+                                                        {{ future_path.information | linebreaksbr}}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row col-sm-10">
+                            <form method="post" action="{% url 'student:delete' student.pk %}">
+                                {% csrf_token %}
+                                <!-- 削除ボタン -->
+                                <button type="submit" class="btn btn-danger pull-right" style="margin-top: 10px"
+                                        onclick="return confirm('本当に削除してもいいですか？')">削除
+                                </button>
+                            </form>
+                            <!-- 編集ボタン -->
+                            <a class="btn btn-primary" style="margin: 10px 0 0 15px"
+                               href="{% url 'student:future_path_update' student.pk %}">進路情報を編集</a>
+                        </div>
+                    {% else %}
+                        <div class="row col-sm-12" th:if="*{grade == '小５' or grade == '小６'}">
+                            <ul class="cp_list">
+                                <li>模擬試験の結果</li>
+                            </ul>
+                            <div class="col-sm-10">
+                                <div th:if="*{entryTime != '小６'}">
+                                    <p style="font-size: medium">＜小学５年生＞</p>
+                                    <table class="table table-bordered table-hover table-condensed">
+                                        <!--
+                                        <tr th:if="${practiceExamList_1st}">
+                                        </tr>
+                                        -->
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-sm-10">
+                                <div th:if="*{grade == '小６'}">
+                                    <p style="font-size: medium">＜小学６年生＞</p>
+                                    <table class="table table-bordered table-hover table-condensed">
+                                        <!--
+                                        <tr th:if="${practiceExamList_1st}">
+                                        </tr>
+                                        -->
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

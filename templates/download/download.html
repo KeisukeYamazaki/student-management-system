@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="page-header" style="margin-bottom: 15px">
+        <h1>ダウンロード</h1>
+        <p style="margin-left: 3px">このページで各種書類をダウンロードできます</p>
+    </div>
+    <div class="row col-sm-10">
+        <div class="btn-group btn-group-justified" role="group">
+            <a type="button" class="btn btn-primary" href="{% url 'download:meeting_sheet' %}"
+               style="width: 20%; border-color: white">個人面談シート
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'download:name_sheet' %}junior/"
+               style="width: 20%; border-color: white">中学生名簿
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'download:name_sheet' %}elementary/"
+               style="width: 20%; border-color: white">小学生名簿
+            </a>
+        </div>
+    </div>
+
+    {% if meeting_sheet %}
+        <div class="row col-sm-12">
+            <div class="form-group">
+                <label for="grade" class="control-label col-xs-2" style="width: 120px; margin-top: 20px">学年を選択：</label>
+                <div class="col-sm-2 col-xs-4">
+                    <select class="form-control" id="meeting_sheet_grade" name="grade" style="margin-top: 13px">
+                        <option value="">学年</option>
+                        <option value="j3"{% if grade == 'j3' %} selected{% endif %}>中３</option>
+                        <option value="j2"{% if grade == 'j2' %} selected{% endif %}>中２</option>
+                        <option value="j1"{% if grade == 'j1' %} selected{% endif %}>中１</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        {% if students %}
+            <div class="panel panel-container col-sm-12" style="margin-top: 15px">
+                <table class="table table-bordered table-condensed table-hover table-striped"
+                       style="margin-top: 15px">
+                    <tr>
+                        <th class="info col-sm-2">名前</th>
+                        <th class="info col-sm-2">校舎</th>
+                        <th class="info col-sm-2">クラス</th>
+                        <th class="info col-sm-2"></th>
+                        <th class="info col-sm-2"></th>
+                    </tr>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.last_name }} {{ student.first_name }}</td>
+                            <td>{{ student.school }}</td>
+                            <td>{{ student.home_room }}</td>
+                            <td>
+                                <a class="btn btn-success"
+                                   href="{% url 'download:meeting_sheet' grade student.id %}">編集</a>
+                            </td>
+                            <td>
+                                <form method="post" action="">
+                                    <input type="hidden" name="id" value="{{ student.id }}">
+                                    <button class="btn btn-primary" type="submit">ダウンロード</button>
+                                    {% csrf_token %}
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        {% endif %}
+        {% if future_path %}
+            <div class="panel panel-container col-sm-12" style="margin-top: 15px">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row col-sm-12">
+                        <ul class="cp_list">
+                            <li>面談シートに記載する進路情報の編集
+                                <span style="padding-left: 30px; font-size: 15px; color: #5a6268">
+                                    <input type="hidden" name="id" value="{{ student_data.id }}">
+                                    生徒氏名：{{ student_data.last_name }} {{ student_data.first_name }}
+                                </span>
+                            </li>
+                            <span style="float: right"
+                                  id="futurePathUpdate">最終更新日：{{ future_path.record_date }}</span>
+                        </ul>
+                        <div class="col-sm-12">
+                            <p style="font-size: medium">＜入試内申＞</p>
+                            <table class="table table-bordered table-hover table-condensed">
+                                <tr>
+                                    <th class="info col-sm-1">/45</th>
+                                    <th class="info col-sm-1">/135</th>
+                                    <th class="info col-sm-1">/25</th>
+                                    <th class="info col-sm-1">/50</th>
+                                    <th class="info col-sm-1">/75</th>
+                                    <th class="info col-sm-1">/15</th>
+                                    <th class="info col-sm-1">/30</th>
+                                </tr>
+                                <tr>
+                                    <td>{{ exam_record.four_five }}</td>
+                                    <td>{{ exam_record.one_three_five }}</td>
+                                    <td>{{ exam_record.two_five }}</td>
+                                    <td>{{ exam_record.five_zero }}</td>
+                                    <td>{{ exam_record.seven_five }}</td>
+                                    <td>{{ exam_record.one_five }}</td>
+                                    <td>{{ exam_record.three_zero }}</td>
+                                </tr>
+                            </table>
+                            <div class="row col-lg-5 col-md-6 col-sm-8 col-xs-10">
+                                <p style="font-size: medium">＜志望校＞</p>
+                                <table class="table table-bordered table-hover table-condensed">
+                                    <tr>
+                                        <th class="info col-lg-2 col-md-3 col-sm-2 col-xs-4">第１志望</th>
+                                        <td class="col-lg-3 col-sm-4">
+                                            <div class="form-group">
+                                                <select class="form-control" name="first_choice"
+                                                        id="first_choice"
+                                                        value="{{ future_path.first_choice.id }}">
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table table-bordered table-hover table-condensed">
+                                    <tr>
+                                        <th class="info col-lg-2 col-md-3 col-sm-2 col-xs-4">第２志望</th>
+                                        <td class="col-lg-3 col-sm-4">
+                                            <div class="form-group">
+                                                <select class="form-control" name="second_choice"
+                                                        id="second_choice"
+                                                        value="{{ future_path.second_choice.id }}">
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table table-bordered table-hover table-condensed">
+                                    <tr>
+                                        <th class="info col-lg-2 col-md-3 col-sm-2 col-xs-4">第３志望</th>
+                                        <td class="col-lg-3 col-sm-4">
+                                            <div class="form-group">
+                                                <select class="form-control" name="third_choice"
+                                                        id="third_choice"
+                                                        value="{{ future_path.third_choice.id }}">
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="row col-sm-12 align">
+                                    <table class="table table-bordered table-hover table-condensed">
+                                        <tr>
+                                            <th class="info col-lg-2 col-md-3 col-sm-2 col-xs-4" rowspan="3">私立高校
+                                            </th>
+                                            <td class="col-sm-4">
+                                                <div class="form-group">
+                                                    <select class="form-control"
+                                                            name="private_school1" id="private_school1"
+                                                            value="{{ future_path.private_school1.id }}">
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <select class="form-control"
+                                                            name="private_school2" id="private_school2"
+                                                            value="{{ future_path.private_school2.id }}">
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <select class="form-control"
+                                                            name="private_school3" id="private_school3"
+                                                            value="{{ future_path.private_school3.id }}">
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="row col-sm-12 align">
+                                    <table class="table table-bordered table-hover table-condensed">
+                                        <tr>
+                                            <th class="info col-lg-2 col-md-3 col-sm-2 col-xs-4" rowspan="3">追加の<br>私立高校
+                                            </th>
+                                            <td class="col-sm-4">
+                                                <div class="form-group">
+                                                    <select class="form-control"
+                                                            name="private_school4" id="private_school4">
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <select class="form-control"
+                                                            name="private_school5" id="private_school5">
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row col-lg-1"></div>
+                            <div class="row col-lg-6 col-sm-12 col-xs-12" style="margin-top: 20px">
+                                <table class="table table-bordered table-hover table-condensed">
+                                    <tr>
+                                        <th class="info">その他</th>
+                                    </tr>
+                                    <tr>
+                                        <td height="200px">
+                                            <div class="form-group">
+                                            <textarea class="form-control" rows="20" name="information"
+                                                      value="{{ future_path.information }}">
+                                            </textarea>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ボタン -->
+                    <div class="row col-sm-12" style="margin-top: 20px">
+                        <a class="btn btn-default" style="margin: 0 20px 0 20px; border-color: #9d9d9d"
+                           href="{% url 'download:meeting_sheet' grade %}">戻る
+                        </a>
+                        <button class="btn btn-primary" name="download" type="submit">更新してダウンロード</button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if kind %}
+        <div class="panel panel-container col-sm-12" style="margin-top: 15px">
+            <div class="col-sm-12">
+                <form method="post" name="form">
+                    <div class="row col-sm-12">
+                        <div class="row col-sm-12">
+                            <p style="color: #444444; margin: 5px 0 0 16px">ダウンロードするクラスにチェックしてください。
+                                クラスの生徒が違う場合はクラス変更を行ってください。</p>
+                            <label class="checkbox_text" style="margin: 10px 0 0 16px">
+                                <input type="checkbox" name="allChecked" id="all">&nbsp;&nbsp;すべて選択
+                            </label>
+                        </div>
+                        <div class="row col-sm-12">
+                            {% for grade in grade_list %}
+                                {% for home_room in home_rooms %}
+                                    {% if home_room.grade == grade %}
+                                        <div class="col-sm-3" style="margin-top: 10px">
+                                            <div class="checkbox text-center">
+                                                <label class="checkbox_text">
+                                                    <input type="checkbox" name="class_name"
+                                                           value="{{ home_room.name }}">　{{ home_room.name }}
+                                                </label>
+                                            </div>
+                                            <table class="table table-bordered table-condensed table-hover table-striped">
+                                                <tr>
+                                                    <th class="info">番号</th>
+                                                    <th class="info">名前</th>
+                                                </tr>
+                                                {% for k, v in students.items %}
+                                                    {% if k == home_room.name %}
+                                                        {% for student in v %}
+                                                            <tr>
+                                                                <td style="font-size: small">{{ forloop.counter }}</td>
+                                                                <td style="font-size: small">
+                                                                    {{ student.last_name }} {{ student.first_name }}
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </table>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if forloop.last %}
+                                {% else %}
+                                    <hr class="row col-sm-12 style-one">
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="row col-sm-12" style="margin-top: 50px">
+                            <button type="submit" name="file_type" value="pdf" class="btn btn-primary">PDFでダウンロード
+                            </button>
+                            <button type="submit" name="file_type" value="excel" class="btn btn-primary"
+                                    style="margin-left: 15px">
+                                エクセルでダウンロード
+                            </button>
+                        </div>
+                    </div>
+                    {% csrf_token %}
+                </form>
+                <div class="row col-sm-12" style="margin-top: 15px">
+                    <p style="font-size: small">&nbsp;※ どちらのファイルも「B4両面印刷」で印刷できます。</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

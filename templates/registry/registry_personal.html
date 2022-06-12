@@ -1,0 +1,770 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="page-header" style="margin-bottom: 15px">
+        <h1>各種登録</h1>
+        <p style="margin-left: 3px">このページで成績、試験結果などを登録できます</p>
+    </div>
+    {% if messages %}
+        <div class="row col-sm-12">
+            <ul class="list-unstyled">
+                {% for message in messages %}
+                    <li{% if message.tags %}
+                        class="bg-{% if message.tags == 'error' %}danger{% else %}info{% endif %} alert"{% endif %}>
+                        {{ message }}
+                        <button type="button" class="close" aria-label="Close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="row col-sm-10">
+        <div class="btn-group btn-group-justified" role="group" style="margin-bottom: 10px">
+            <a type="button" class="btn btn-primary" href="{% url 'registry:school-record' %}"
+               style="border-color: white">成績
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:regular-exam' %}"
+               style="border-color: white">定期試験
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:practice-exam' %}"
+               style="border-color: white">模擬試験
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:personal' %}"
+               style="border-color: white">個人登録
+            </a>
+        </div>
+    </div>
+    <div class="row col-sm-12">
+        <div class="form-group" style="display: block">
+            <label for="grade" class="control-label col-xs-2"
+                   style="margin: 17px 0 0 20px">登録する生徒の学年：</label>
+            <div class="col-sm-2 col-xs-4">
+                <select class="form-control" id="personal_grade" name="personal_grade" style="margin-top: 10px">
+                    <option value="">学年</option>
+                    <option value="j3"{% if grade == 'j3' %} selected {% endif %}>中３</option>
+                    <option value="j2"{% if grade == 'j2' %} selected {% endif %}>中２</option>
+                    <option value="j1"{% if grade == 'j1' %} selected {% endif %}>中１</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    {% if students and not student %}
+        <div class="panel panel-container col-sm-10" style="margin-top: 15px">
+            <div class="col-sm-10">
+                <table class="table table-bordered table-condensed table-hover table-striped" style="margin-top: 15px">
+                    <tr>
+                        <th class="info col-sm-2">名前</th>
+                        <th class="info col-sm-2">学校</th>
+                        <th class="info col-sm-2">クラス</th>
+                        <th class="info col-sm-2"></th>
+                    </tr>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.last_name }} {{ student.first_name }}</td>
+                            <td>{{ student.local_school }}</td>
+                            <td>{{ student.home_room }}</td>
+                            <td>
+                                <a class="btn btn-primary" href="{% url 'registry:personal' grade student.id %}">登録</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    {% endif %}
+    {% if student %}
+        <div class="panel panel-container col-sm-12" style="margin-top: 15px">
+        <div class="row col-sm-12">
+            <ul class="cp_list">
+                <li>成績・定期試験・模擬試験データの登録
+                    <span style="padding-left: 50px; font-size: smaller; color: #7c7c7c">
+                            生徒氏名：{{ student.last_name }} {{ student.first_name }}
+                        </span>
+                </li>
+            </ul>
+            <div class="col-sm-12">
+                <div class="row col-sm-10" style="margin-top: 5px">
+                    <div>どのデータを登録しますか？</div>
+                    <label class="radio-inline radio_text" style="margin: 5px 0 0 7px">
+                        <input type="radio" name="radio_name" value="school_record"
+                                {% if kind == 'school_record' %} checked{% endif %}> 成績(内申)
+                    </label>
+                    <label class="radio-inline radio_text" style="margin: 5px 0 0 20px">
+                        <input type="radio" name="radio_name" value="regular_exam"
+                                {% if kind == 'regular_exam' %} checked{% endif %}> 定期試験
+                    </label>
+                    <label class="radio-inline radio_text" style="margin: 5px 0 0 20px">
+                        <input type="radio" name="radio_name" value="practice_exam"
+                                {% if kind == 'practice_exam' %} checked{% endif %}> 模擬試験
+                    </label>
+                </div>
+            </div>
+            {% if kind == 'school_record' %}
+                <div class="col-sm-12">
+                    <div class="row col-sm-12" style="margin-top: 20px">
+                        <p style="font-size: medium">＜内申(成績)の登録＞</p>
+                        <form method="post" action="" class="personal_form">
+                            {% csrf_token %}
+                            <div class="col-sm-12">
+                                <p style="font-size: small">＜登録されている内申＞(すでに登録されているものを変更すると更新されます)</p>
+                                {% if count == 0 %}
+                                    <div style="margin: 0 0 15px 15px">現在登録されている内申はありません</div>
+                                {% else %}
+                                    <table class="table table-bordered table-condensed table-hover table-striped">
+                                        <tr>
+                                            <th class="info" width="8%">学年</th>
+                                            <th class="info" width="8%">年度</th>
+                                            <th class="info" width="12%">時期</th>
+                                            <th class="info">英語</th>
+                                            <th class="info">数学</th>
+                                            <th class="info">国語</th>
+                                            <th class="info">理科</th>
+                                            <th class="info">社会</th>
+                                            <th class="info" width="5%">５科</th>
+                                            <th class="info">音楽</th>
+                                            <th class="info">美術</th>
+                                            <th class="info">保体</th>
+                                            <th class="info">技家</th>
+                                            <th class="info" width="5%">９科</th>
+                                        </tr>
+                                        {% for grade, records in school_records.items %}
+                                            {% for record in records %}
+                                                <tr>
+                                                    <input type="hidden" name="id" value="{{ record.id }}">
+                                                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                                                    <td>
+                                                        <select class="form-control" name="grade">
+                                                            <option value="">選択</option>
+                                                            <option value="中１"{% if grade == '中１' %}
+                                                                    selected {% endif %}>
+                                                                中１
+                                                            </option>
+                                                            <option value="中２"{% if grade == '中２' %}
+                                                                    selected {% endif %}>
+                                                                中２
+                                                            </option>
+                                                            <option value="中３"{% if grade == '中３' %}
+                                                                    selected {% endif %}>
+                                                                中３
+                                                            </option>
+                                                        </select>
+                                                    </td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="record_year"
+                                                               value="{{ record.record_year }}"></td>
+                                                    <td>
+                                                        <select class="form-control" name="term_name">
+                                                            <option value="">選択</option>
+                                                            {% if term == '３学期制' %}
+                                                                <option value="1"
+                                                                        {% if record.term_name.term_name == '１学期' %}
+                                                                        selected {% endif %}>１学期
+                                                                </option>
+                                                                <option value="3"
+                                                                        {% if record.term_name.term_name == '２学期' %}
+                                                                        selected {% endif %}>２学期
+                                                                </option>
+                                                                <option value="5"
+                                                                        {% if record.term_name.term_name == '３学期' %}
+                                                                        selected {% endif %}>３学期
+                                                                </option>
+                                                            {% elif term == '２学期制' %}
+                                                                <option value="2"
+                                                                        {% if record.term_name.term_name == '前期' %}
+                                                                        selected {% endif %}>前期
+                                                                </option>
+                                                                <option value="4"
+                                                                        {% if record.term_name.term_name == '後期' %}
+                                                                        selected {% endif %}>後期
+                                                                </option>
+                                                            {% endif %}
+                                                        </select>
+                                                    </td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="english"
+                                                               value="{{ record.english }}"></td>
+                                                    <td><input class="form-control personal" type="text" name="math"
+                                                               value="{{ record.math }}"></td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="japanese"
+                                                               value="{{ record.japanese }}"></td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="science"
+                                                               value="{{ record.science }}"></td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="social_studies"
+                                                               value="{{ record.social_studies }}"></td>
+                                                    <td bgcolor="#fafad2"><span
+                                                            class="sum_five">{{ record.sum_five }}</span>
+                                                        <input type="hidden" name="sum_five"
+                                                               value="{{ record.sum_five }}">
+                                                    </td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="music"
+                                                               value="{{ record.music }}"></td>
+                                                    <td><input class="form-control personal" type="text" name="art"
+                                                               value="{{ record.art }}"></td>
+                                                    <td><input class="form-control personal" type="text" name="pe"
+                                                               value="{{ record.pe }}"></td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="tech_home"
+                                                               value="{{ record.tech_home }}"></td>
+                                                    <td bgcolor="#fafad2"><span
+                                                            class="sum_all">{{ record.sum_all }}</span>
+                                                        <input type="hidden" name="sum_all"
+                                                               value="{{ record.sum_all }}">
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </table>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-12">
+                                <p style="font-size: small">＜登録する内申＞</p>
+                                <table class="table table-bordered table-condensed table-hover"
+                                       id="tblForm1">
+                                    <thead>
+                                    <tr>
+                                        <th class="info" width="8%">学年</th>
+                                        <th class="info" width="10%">実施年度<p style="font-size: x-small">※
+                                            半角数字4ケタ</p>
+                                        </th>
+                                        <th class="info" width="15%">時期</th>
+                                        <th class="info">英語</th>
+                                        <th class="info">数学</th>
+                                        <th class="info">国語</th>
+                                        <th class="info">理科</th>
+                                        <th class="info">社会</th>
+                                        <th class="info" width="5%">５科</th>
+                                        <th class="info">音楽</th>
+                                        <th class="info">美術</th>
+                                        <th class="info">保体</th>
+                                        <th class="info">技家</th>
+                                        <th class="info" width="5%">９科</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <input type="hidden" name="id" value="">
+                                        <input type="hidden" name="student_id" value="{{ student.id }}">
+                                        <td>
+                                            <select class="form-control" name="grade">
+                                                <option value="">選択</option>
+                                                <option value="中１">中１</option>
+                                                <option value="中２">中２</option>
+                                                <option value="中３">中３</option>
+                                            </select>
+                                        </td>
+                                        <td><input class="form-control" type="text" name="record_year"></td>
+                                        <td>
+                                            <select class="form-control" name="term_name">
+                                                <option value="">選択</option>
+                                                {% if term == '３学期制' %}
+                                                    <option value="1">１学期</option>
+                                                    <option value="3">２学期</option>
+                                                    <option value="5">３学期</option>
+                                                {% elif term == '２学期制' %}
+                                                    <option value="2">前期</option>
+                                                    <option value="4">後期</option>
+                                                {% endif %}
+                                            </select>
+                                        </td>
+                                        <td><input class="form-control personal" type="text" name="english"
+                                                   value=""></td>
+                                        <td><input class="form-control personal" type="text" name="math"></td>
+                                        <td><input class="form-control personal" type="text" name="japanese">
+                                        </td>
+                                        <td><input class="form-control personal" type="text" name="science">
+                                        </td>
+                                        <td><input class="form-control personal" type="text"
+                                                   name="social_studies">
+                                        </td>
+                                        <td><span class="sum_five">0</span><input type="hidden" value=""
+                                                                                  name="sum_five"></td>
+                                        <td><input class="form-control personal" type="text" name="music"></td>
+                                        <td><input class="form-control personal" type="text" name="art"></td>
+                                        <td><input class="form-control personal" type="text" name="pe"></td>
+                                        <td><input class="form-control personal" type="text" name="tech_home">
+                                        </td>
+                                        <td><span class="sum_all">0</span><input type="hidden" value=""
+                                                                                 name="sum_all"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <input id="btnAdd1" type="button" value="行追加" style="margin-bottom: 20px"/>
+                                <br/>
+                                <button class="btn btn-primary btn-lg personal_registry" value="school_record"
+                                        type="submit">登録
+                                </button>
+                                <span style="color: red; padding-left: 10px; display: none" class="error">
+                                    学年・実施年度・時期をすべて入力してください
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% elif kind == 'regular_exam' %}
+                <div class="col-sm-12">
+                    <div class="row col-sm-12" style="margin-top: 20px">
+                        <p style="font-size: medium">＜定期試験結果登録＞</p>
+                        <form method="post" class="personal_form">
+                            {% csrf_token %}
+                            <div class="col-sm-12">
+                                <p style="font-size: small">＜登録されている結果＞(すでに登録されているものを変更すると更新されます)</p>
+                                {% if count == 0 %}
+                                    <div style="margin: 0 0 15px 15px">現在登録されている定期試験はありません</div>
+                                {% else %}
+                                    <table class="table table-bordered table-condensed table-hover table-striped">
+                                        <tr>
+                                            <th class="info" width="8%">学年</th>
+                                            <th class="info" width="8%">年度</th>
+                                            <th class="info" width="12%">時期</th>
+                                            <th class="info">英語</th>
+                                            <th class="info">数学</th>
+                                            <th class="info">国語</th>
+                                            <th class="info">理科</th>
+                                            <th class="info">社会</th>
+                                            <th class="info" width="5%">５科</th>
+                                            <th class="info">音楽</th>
+                                            <th class="info">美術</th>
+                                            <th class="info">保体</th>
+                                            <th class="info">技術</th>
+                                            <th class="info">家庭</th>
+                                        </tr>
+                                        {% for grade, regulars in regular_exams.items %}
+                                            {% for regular in regulars %}
+                                                <tr>
+                                                    <input type="hidden" name="id" value="{{ regular.id }}">
+                                                    <input type="hidden" name="student_id" value="{{ student.id }}">
+                                                    <td>
+                                                        <select class="form-control" name="grade">
+                                                            <option value="">選択</option>
+                                                            <option value="中１"{% if grade == '中１' %}
+                                                                    selected {% endif %}>
+                                                                中１
+                                                            </option>
+                                                            <option value="中２"{% if grade == '中２' %}
+                                                                    selected {% endif %}>
+                                                                中２
+                                                            </option>
+                                                            <option value="中３"{% if grade == '中３' %}
+                                                                    selected {% endif %}>
+                                                                中３
+                                                            </option>
+                                                        </select>
+                                                    </td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="exam_year"
+                                                               value="{{ regular.exam_year }}"></td>
+                                                    <td>
+                                                        <select class="form-control" name="regular_id">
+                                                            <option value="">選択</option>
+                                                            {% if term == '３学期制' %}
+                                                                <option value="1"
+                                                                        {% if regular.regular_id.name == '１学期中間' %}
+                                                                        selected {% endif %}>１学期中間
+                                                                </option>
+                                                                <option value="3"
+                                                                        {% if regular.regular_id.name == '１学期期末' %}
+                                                                        selected {% endif %}>１学期期末
+                                                                </option>
+                                                                <option value="5"
+                                                                        {% if regular.regular_id.name == '２学期中間' %}
+                                                                        selected {% endif %}>２学期中間
+                                                                </option>
+                                                                <option value="7"
+                                                                        {% if regular.regular_id.name == '２学期期末' %}
+                                                                        selected {% endif %}>２学期期末
+                                                                </option>
+                                                                <option value="8"
+                                                                        {% if regular.regular_id.name == '学年末' %}
+                                                                        selected {% endif %}>学年末
+                                                                </option>
+                                                            {% elif term == '２学期制' %}
+                                                                <option value="2"
+                                                                        {% if regular.regular_id.name == '前期中間' %}
+                                                                        selected {% endif %}>前期中間
+                                                                </option>
+                                                                <option value="4"
+                                                                        {% if regular.regular_id.name == '前期期末' %}
+                                                                        selected {% endif %}>前期期末
+                                                                </option>
+                                                                <option value="6"
+                                                                        {% if regular.regular_id.name == '後期中間' %}
+                                                                        selected {% endif %}>後期中間
+                                                                </option>
+                                                                <option value="8"
+                                                                        {% if regular.regular_id.name == '学年末' %}
+                                                                        selected {% endif %}>学年末
+                                                                </option>
+                                                            {% endif %}
+                                                        </select>
+                                                    </td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="english"
+                                                               value="{{ regular.english }}"></td>
+                                                    <td><input class="form-control personal" type="text" name="math"
+                                                               value="{{ regular.math }}"></td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="japanese"
+                                                               value="{{ regular.japanese }}"></td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="science"
+                                                               value="{{ regular.science }}"></td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="social_studies"
+                                                               value="{{ regular.social_studies }}"></td>
+                                                    <td bgcolor="#fafad2"><span
+                                                            class="sum_five">{{ regular.sum_five }}</span>
+                                                        <input type="hidden" value="{{ regular.sum_five }}"
+                                                               name="sum_five">
+                                                    </td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="music"
+                                                               value="{{ regular.music }}"></td>
+                                                    <td><input class="form-control personal" type="text" name="art"
+                                                               value="{{ regular.art }}"></td>
+                                                    <td><input class="form-control personal" type="text" name="pe"
+                                                               value="{{ regular.pe }}"></td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="tech_home"
+                                                               value="{{ regular.tech }}"></td>
+                                                    <td><input class="form-control personal" type="text"
+                                                               name="tech_home"
+                                                               value="{{ regular.home }}"></td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endfor %}
+                                    </table>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-12">
+                                <p style="font-size: small">＜登録する結果＞</p>
+
+                                <table class="table table-bordered table-condensed table-hover"
+                                       id="tblForm1">
+                                    <thead>
+                                    <tr>
+                                        <th class="info" width="8%">学年</th>
+                                        <th class="info" width="10%">実施年度<p style="font-size: x-small">※ 半角数字4ケタ</p>
+                                        </th>
+                                        <th class="info" width="15%">時期</th>
+                                        <th class="info">英語</th>
+                                        <th class="info">数学</th>
+                                        <th class="info">国語</th>
+                                        <th class="info">理科</th>
+                                        <th class="info">社会</th>
+                                        <th class="info" width="5%">５科</th>
+                                        <th class="info">音楽</th>
+                                        <th class="info">美術</th>
+                                        <th class="info">保体</th>
+                                        <th class="info">技術</th>
+                                        <th class="info">家庭</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <input type="hidden" name="id" value="">
+                                        <input type="hidden" name="student_id" value="{{ student.id }}">
+                                        <td>
+                                            <select class="form-control" name="grade">
+                                                <option value="">選択</option>
+                                                <option value="中１">中１</option>
+                                                <option value="中２">中２</option>
+                                                <option value="中３">中３</option>
+                                            </select>
+                                        </td>
+                                        <td><input class="form-control" type="text" name="exam_year"></td>
+                                        <td>
+                                            <select class="form-control" name="regular_id">
+                                                <option value="">選択</option>
+                                                {% if term == '３学期制' %}
+                                                    <option value="1">１学期中間</option>
+                                                    <option value="3">１学期期末</option>
+                                                    <option value="5">２学期中間</option>
+                                                    <option value="7">２学期期末</option>
+                                                    <option value="8">学年末</option>
+                                                {% elif term == '２学期制' %}
+                                                    <option value="2">前期中間</option>
+                                                    <option value="4">前期期末</option>
+                                                    <option value="4">後期中間</option>
+                                                    <option value="8">学年末</option>
+                                                {% endif %}
+                                            </select>
+                                        </td>
+                                        <td><input class="form-control personal" type="text" name="english"
+                                                   value=""></td>
+                                        <td><input class="form-control personal" type="text" name="math"></td>
+                                        <td><input class="form-control personal" type="text" name="japanese"></td>
+                                        <td><input class="form-control personal" type="text" name="science"></td>
+                                        <td><input class="form-control personal" type="text" name="social_studies">
+                                        </td>
+                                        <td><span class="sum_five">0</span><input type="hidden" value=""
+                                                                                  name="sum_five"></td>
+                                        <td><input class="form-control personal" type="text" name="music"></td>
+                                        <td><input class="form-control personal" type="text" name="art"></td>
+                                        <td><input class="form-control personal" type="text" name="pe"></td>
+                                        <td><input class="form-control personal" type="text" name="tech"></td>
+                                        <td><input class="form-control personal" type="text" name="home"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <input id="btnAdd1" type="button" value="行追加" style="margin-bottom: 20px"/>
+                                <br/>
+                                <button class="btn btn-primary btn-lg personal_registry" type="submit"
+                                        value="regular_exam">登録
+                                </button>
+                                <span style="color: red; padding-left: 10px; display: none" class="error">
+                                    学年・実施年度・時期をすべて入力してください
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% elif kind == 'practice_exam' %}
+                <div class="row col-sm-12" style="margin-top: 20px">
+                    <p style="font-size: medium">＜模擬試験結果登録＞</p>
+                    <p style="font-size: small">＜登録されている結果＞</p>
+                    <form method="post" action="" class="personal_form">
+                        {% csrf_token %}
+                        {% if count == 0 %}
+                            <div style="margin: 0 0 15px 15px">現在登録されている模試はありません</div>
+                        {% else %}
+                            <table class="table table-bordered table-condensed table-hover table-striped">
+                                <tr>
+                                    <th class="info" width="7%">学年</th>
+                                    <th class="info" width="8%">実施年度</th>
+                                    <th class="info" width="7%">実施月</th>
+                                    <th class="info">英語</th>
+                                    <th class="info">数学</th>
+                                    <th class="info">国語</th>
+                                    <th class="info">理科</th>
+                                    <th class="info">社会</th>
+                                    <th class="info" width="5%">３科<br/>合計</th>
+                                    <th class="info" width="5%">５科<br/>合計</th>
+                                    <th class="info">３科<br/>偏差</th>
+                                    <th class="info">５科<br/>偏差</th>
+                                    <th class="info">英語<br/>偏差</th>
+                                    <th class="info">数学<br/>偏差</th>
+                                    <th class="info">国語<br/>偏差</th>
+                                    <th class="info">理科<br/>偏差</th>
+                                    <th class="info">社会<br/>偏差</th>
+                                </tr>
+                                {% for grade, practices in practice_exams.items %}
+                                    {% for practice in practices %}
+                                        <tr>
+                                            <input type="hidden" name="id" value="{{ practice.id }}">
+                                            <input type="hidden" name="student_id" value="{{ student.id }}">
+                                            <td>
+                                                <select class="form-control" name="grade">
+                                                    <option value="">選択</option>
+                                                    <option value="中１"{% if grade == '中１' %}
+                                                            selected {% endif %}>
+                                                        中１
+                                                    </option>
+                                                    <option value="中２"{% if grade == '中２' %}
+                                                            selected {% endif %}>
+                                                        中２
+                                                    </option>
+                                                    <option value="中３"{% if grade == '中３' %}
+                                                            selected {% endif %}>
+                                                        中３
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td><input class="form-control" type="text" name="exam_year"
+                                                       value="{{ practice.exam_year }}"></td>
+                                            <td>
+                                                <select class="form-control" name="month_id">
+                                                    <option value="">選択</option>
+                                                    <option value="1"{% if practice.month.name == '７月' %}
+                                                            selected{% endif %}>
+                                                        ７月
+                                                    </option>
+                                                    <option value="2"{% if practice.month.name == '８月' %}
+                                                            selected{% endif %}>
+                                                        ８月
+                                                    </option>
+                                                    <option value="3"{% if practice.month.name == '10月' %}
+                                                            selected{% endif %}>
+                                                        10月
+                                                    </option>
+                                                    <option value="4"{% if practice.month.name == '12月' %}
+                                                            selected{% endif %}>
+                                                        12月
+                                                    </option>
+                                                    <option value="5"{% if practice.month.name == '１月' %}
+                                                            selected{% endif %}>
+                                                        １月
+                                                    </option>
+                                                    <option value="6"{% if practice.month.name == '３月' %}
+                                                            selected{% endif %}>
+                                                        ３月
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control personal"
+                                                       type="text"
+                                                       name="english" value="{{ practice.english_score }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control personal"
+                                                       type="text"
+                                                       name="math" value="{{ practice.math_score }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control personal"
+                                                       type="text"
+                                                       name="japanese" value="{{ practice.japanese_score }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control personal"
+                                                       type="text"
+                                                       name="science" value="{{ practice.science_score }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control personal"
+                                                       type="text"
+                                                       name="social_studies" value="{{ practice.social_score }}">
+                                            </td>
+                                            <td bgcolor="#fafad2"><span
+                                                    class="sum_three">{{ practice.sum_three }}</span>
+                                                <input type="hidden" name="sum_three"
+                                                       value="{{ practice.sum_three }}">
+                                            </td>
+                                            <td bgcolor="#fafad2"><span
+                                                    class="sum_all">{{ practice.sum_all }}</span>
+                                                <input type="hidden" name="sum_all" value="{{ practice.sum_all }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                                       name="dev_three" value="{{ practice.dev_three }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                                       name="dev_five" value="{{ practice.dev_five }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                                       name="english_deviation"
+                                                       value="{{ practice.english_deviation }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                                       name="math_deviation" value="{{ practice.math_deviation }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                                       name="japanese_deviation"
+                                                       value="{{ practice.japanese_deviation }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                                       name="science_deviation"
+                                                       value="{{ practice.science_deviation }}">
+                                            </td>
+                                            <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                                       name="social_deviation"
+                                                       value="{{ practice.social_deviation }}">
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                            </table>
+                        {% endif %}
+                        <p style="font-size: small">＜登録する結果＞</p>
+                        <table class="table table-bordered table-condensed table-hover table-striped"
+                               id="tblForm1">
+                            <thead>
+                            <tr>
+                                <th class="info" width="7%">学年</th>
+                                <th class="info" width="8%">実施年度<p style="font-size: x-small">※ 半角数字4ケタ</p>
+                                </th>
+                                <th class="info" width="7%">実施月</th>
+                                <th class="info">英語</th>
+                                <th class="info">数学</th>
+                                <th class="info">国語</th>
+                                <th class="info">理科</th>
+                                <th class="info">社会</th>
+                                <th class="info" width="5%">３科<br/>合計</th>
+                                <th class="info" width="5%">５科<br/>合計</th>
+                                <th class="info">３科<br/>偏差</th>
+                                <th class="info">５科<br/>偏差</th>
+                                <th class="info">英語<br/>偏差</th>
+                                <th class="info">数学<br/>偏差</th>
+                                <th class="info">国語<br/>偏差</th>
+                                <th class="info">理科<br/>偏差</th>
+                                <th class="info">社会<br/>偏差</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <input type="hidden" name="id" value="">
+                                <input type="hidden" name="student_id" value="{{ student.id }}">
+                                <td>
+                                    <select class="form-control" name="grade">
+                                        <option value="">選択</option>
+                                        <option value="中１">中１</option>
+                                        <option value="中２">中２</option>
+                                        <option value="中３">中３</option>
+                                    </select>
+                                </td>
+                                <td><input class="form-control" type="text" name="exam_year"></td>
+                                <td>
+                                    <select class="form-control" name="month_id">
+                                        <option value="">選択</option>
+                                        <option value="1">７月</option>
+                                        <option value="2">８月</option>
+                                        <option value="3">10月</option>
+                                        <option value="4">12月</option>
+                                        <option value="5">１月</option>
+                                        <option value="6">３月</option>
+                                    </select>
+                                </td>
+                                <td><input style="padding: 6px 9px" class="form-control personal" type="text"
+                                           name="english">
+                                </td>
+                                <td><input style="padding: 6px 9px" class="form-control personal" type="text"
+                                           name="math">
+                                </td>
+                                <td><input style="padding: 6px 9px" class="form-control personal" type="text"
+                                           name="japanese">
+                                </td>
+                                <td><input style="padding: 6px 9px" class="form-control personal" type="text"
+                                           name="science">
+                                </td>
+                                <td><input style="padding: 6px 9px" class="form-control personal" type="text"
+                                           name="social_studies">
+                                </td>
+                                <td bgcolor="#fafad2"><span class="sum_three">0</span>
+                                    <input type="hidden" name="sum_three" value="">
+                                </td>
+                                <td bgcolor="#fafad2"><span class="sum_all">0</span>
+                                    <input type="hidden" name="sum_all" value="">
+                                </td>
+                                <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                           name="dev_three"></td>
+                                <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                           name="dev_five"></td>
+                                <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                           name="english_deviation"></td>
+                                <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                           name="math_deviation"></td>
+                                <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                           name="japanese_deviation"></td>
+                                <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                           name="science_deviation"></td>
+                                <td><input style="padding: 6px 9px" class="form-control" type="text"
+                                           name="social_deviation"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <input id="btnAdd1" type="button" value="行追加" style="margin-bottom: 20px"/>
+                        <br/>
+                        <button class="btn btn-primary btn-lg personal_registry" type="submit" value="practice_exam">
+                            登録
+                        </button>
+                        <span style="color: red; padding-left: 10px; display: none" class="error">
+                            学年・実施年度・実施月をすべて入力してください
+                        </span>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+{% endblock %}

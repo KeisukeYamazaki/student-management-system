@@ -1,0 +1,129 @@
+ul.cp_list {
+    padding: 0.5em;
+    list-style-type: none;
+}
+
+ul.cp_list li {
+    position: relative;
+    padding: 0.5em 1em 0.5em 2.3em;
+    margin-bottom: 5px;
+    border-bottom: 1px solid rgba(25, 118, 210, 1);
+    font-size: large;
+}
+
+ul.cp_list li:after,
+ul.cp_list li:before {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+}
+
+ul.cp_list li:before {
+    top: 50%;
+    left: 0.2em;
+    width: 17px;
+    height: 17px;
+    background: rgba(25, 118, 210, 1);
+    transform: translateY(-50%);
+}
+
+ul.cp_list li:after {
+    top: 1.1em;
+    left: 0.7em;
+    width: 14px;
+    height: 14px;
+    background: rgba(25, 118, 210, 0.5);
+}
+
+.table > tbody > tr > th,
+.table > tfoot > tr > th,
+.table > thead > tr > th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.table > tbody > tr > td,
+.table > tfoot > tr > td,
+.table > thead > tr > td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.align {
+    padding: 0px;
+    margin-left: 0px;
+}
+
+.list_end {
+    border-top: solid 1px #eaeaea;
+    padding-top: 10px;
+    font-weight: bold;
+}
+
+.box {
+    padding: 20px;
+}
+
+.box2 {
+    padding: 20px 20px 0px 20px;
+}
+
+.btn-margin20 {
+    margin-left: 20px;
+}
+
+.btn-margin10 {
+    margin-left: 10px;
+}
+
+.must-label {
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+#id_last_name, #id_first_name, #id_last_ruby, #id_first_ruby {
+    width: 30%;
+    display: inline;
+    margin-left: 5px;"
+}
+
+.form-height {
+    height: 70px;
+}
+
+#id_grade, #id_school, #id_home_room, #id_local_school, #id_entry_grade {
+    width: 40%;
+}
+
+.date_padding {
+    padding: 0 5px;
+}
+
+.mini {
+    padding: 1px 4px;
+    font-size: 8px;
+    font-weight: lighter;
+    font-family: "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+    background-color: #66afe9;
+    border-radius: 3px;
+    color: white;
+    border-color: #66afe9;
+    margin: 0 0 0px 1px;
+    position: relative;
+}
+
+.mini:active {
+    outline: none;
+    background-color: #2e6da4;
+    border-color: #2e6da4;
+}
+
+.mini.act {
+    background-color: #2e6da4;
+    border-color: #2e6da4;
+}
+
+.select2-selection--single {
+    line-height: 1;
+}
+

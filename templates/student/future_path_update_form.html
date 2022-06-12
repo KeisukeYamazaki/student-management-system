@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% load widget_tweaks %}
+
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="page-header">
+                <h1>生徒情報編集</h1>
+            </div>
+            <div class="container-fluid panel panel-container">
+                <form method="post" action="">
+                    <div class="row col-sm-12">
+                        <ul class="cp_list">
+                            <li>進路関係
+                                <span style="padding-left: 30px; font-size: 15px; color: #5a6268">
+                                    生徒氏名：{{ student.last_name }} {{ student.first_name }}
+                                </span>
+                            </li>
+                            <span style="float: right;"
+                                  id="futurePathUpdate">最終更新日：{{ future_path.record_date }}</span>
+                        </ul>
+                        <div class="col-sm-12">
+                            <div class="row col-lg-5 col-md-6 col-sm-8 col-xs-10">
+                                <p style="font-size: medium">＜志望校＞</p>
+                                <table class="table table-bordered table-hover table-condensed">
+                                    <tr>
+                                        <th class="info col-lg-2 col-md-3 col-sm-2 col-xs-4">第１志望</th>
+                                        <td class="col-lg-3 col-sm-4">
+                                            <div class="form-group">
+                                                <select class="form-control"
+                                                        name="first_choice" id="first_choice"
+                                                        value="{{ future_path.first_choice.id }}">
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table table-bordered table-hover table-condensed">
+                                    <tr>
+                                        <th class="info col-lg-2 col-md-3 col-sm-2 col-xs-4">第２志望</th>
+                                        <td class="col-lg-3 col-sm-4">
+                                            <div class="form-group">
+                                                <select class="form-control"
+                                                        name="second_choice" id="second_choice"
+                                                        value="{{ future_path.second_choice.id }}">
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <table class="table table-bordered table-hover table-condensed">
+                                    <tr>
+                                        <th class="info col-lg-2 col-md-3 col-sm-2 col-xs-4">第３志望</th>
+                                        <td class="col-lg-3 col-sm-4">
+                                            <div class="form-group">
+                                                <select class="form-control"
+                                                        name="third_choice" id="third_choice"
+                                                        value="{{ future_path.third_choice.id }}">
+                                                </select>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="row col-sm-12 align">
+                                    <table class="table table-bordered table-hover table-condensed">
+                                        <tr>
+                                            <th class="info col-lg-2 col-md-3 col-sm-2 col-xs-4" rowspan="3">私立高校</th>
+                                            <td class="col-sm-4">
+                                                <div class="form-group">
+                                                    <select class="form-control"
+                                                            name="private_school1" id="private_school1"
+                                                            value="{{ future_path.private_school1.id }}">
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <select class="form-control"
+                                                            name="private_school2" id="private_school2"
+                                                            value="{{ future_path.private_school2.id }}">
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                    <select class="form-control"
+                                                            name="private_school3" id="private_school3"
+                                                            value="{{ future_path.private_school3.id }}">
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row col-lg-1"></div>
+                            <div class="row col-lg-6 col-sm-12 col-xs-12" style="margin-top: 20px">
+                                <table class="table table-bordered table-hover table-condensed">
+                                    <tr>
+                                        <th class="info">その他</th>
+                                    </tr>
+                                    <tr>
+                                        <td height="200px">
+                                            <div class="form-group">
+                                            <textarea class="form-control" rows="20" name="information"
+                                                      value="{{ future_path.information }}"></textarea>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 更新ボタン -->
+                    <div class="row col-sm-12">
+                        <a href="{% url 'student:detail' student.pk %}" class="btn btn-default btn-lg"
+                           style="margin: 0 20px 0 20px; border-color: #9d9d9d">戻る</a>
+                        <button class="btn btn-primary btn-lg" name="futurePathUpdate" type="submit">進路情報を更新</button>
+                    </div>
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {#    {% include 'high_schools.html' %}#}
+
+{% endblock %}

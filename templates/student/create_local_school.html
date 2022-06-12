@@ -1,0 +1,198 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>聡明舎生徒管理システム</title>
+    <link href="{% static '/vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static '/vendor/datepicker/datepicker3.css' %}" rel="stylesheet">
+    <link href="{% static '/vendor/select2/css/select2.min.css' %}" rel="stylesheet">
+    <link href="{% static '/css/styles.css' %}" rel="stylesheet">
+    <link href="{% static '/css/home.css' %}" rel="stylesheet">
+    <link href="{% static '/css/numberList.css' %}" rel="stylesheet">
+    <link href="{% static '/css/checkboxRadiobox.css' %}" rel="stylesheet">
+    <link href="{% static '/css/table_border.css' %}" rel="stylesheet">
+    <link href="{% static '/css/student.css' %}" rel="stylesheet">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static '/img/favicon/favicon/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static '/img/favicon/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static '/img/favicon/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static '/img/favicon/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static '/img/favicon/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static '/img/favicon/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static '/img/favicon/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static '/img/favicon/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static '/img/favicon/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static '/img/favicon/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static '/img/favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static '/img/favicon/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static '/img/favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static '/img/favicon/manifest.json' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <!--Font-awesome-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!--Custom Font-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet">
+    <!--Select2 Bootstrap Theme-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css"
+          rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="{% static '/js/html5shiv.min.js' %}"></script>
+    <script src="{% static '/js/respond.min.js' %}"></script>
+    <![endif]-->
+    <script src="{% static '/vendor/jquery/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static '/js/get-birthday.js' %}"></script>
+    <script src="{% static '/js/registry-sum-func.js' %}"></script>
+    <script src="{% static '/js/all-check.js' %}"></script>
+    <script src="{% static '/js/practice-exam-select.js' %}"></script>
+    <script src="{% static '/js/meeting-sheet-grade.js' %}"></script>
+    <script src="{% static '/js/registry-personal.js' %}"></script>
+    <script>
+        $(function ($) {
+            // 中学校登録か小学校登録かの選択
+            $('input[name="school_select"]').change(function () {
+                let school = $(this).val();
+                // フォームのhidden inputの値を設定
+                $('input[name="school_kind"]').attr('value', school);
+                // 中学校・小学校いずれか選択したほうを表示する
+                if (school == 'junior') {
+                    $('#j_school').css('display', 'block');
+                    $('#e_school').css('display', 'none');
+                } else if (school == 'elementary') {
+                    $('#j_school').css('display', 'none');
+                    $('#e_school').css('display', 'block');
+                }
+            })
+        })
+    </script>
+
+    <style type="text/css">
+        .jquery-error {
+            color: red;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body style="padding-top: 0">
+<div class="col-sm-12 main" style="padding: 30px">
+    <div class="row">
+        <div class="col-sm-10 content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="page-header">
+                        <h1>新しい学校の登録</h1>
+                    </div>
+                    {% if messages %}
+                        <ul class="list-unstyled">
+                            {% for message in messages %}
+                                <li {% if message.tags %}
+                                    class="bg-{% if message.tags == 'error' %}danger{% else %}info{% endif %} alert"{% endif %}>
+                                    {{ message }}
+                                    <button type="button" class="close" aria-label="Close" data-dismiss="alert">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    <div class="container-fluid panel panel-container box">
+                        <div class="row col-sm-10">
+                            <div>【登録する学校の選択】どちらの学校を登録しますか？</div>
+                            <label class="radio-inline radio_text" style="margin: 5px 0 0 7px">
+                                <input type="radio" name="school_select" value="junior"> 中学校
+                            </label>
+                            <label class="radio-inline radio_text" style="margin: 5px 0 0 20px">
+                                <input type="radio" name="school_select" value="elementary"> 小学校
+                            </label>
+                        </div>
+                        <div class="row col-sm-10" style="margin-top: 30px; display: none" id="j_school">
+                            <div style="font-weight: bold">〔中学校の登録〕</div>
+                            <form method="post">
+                                {% csrf_token %}
+                                <table style="margin: 20px 0 0 30px">
+                                    <tr>
+                                        <td height="50px" style="font-weight: bold; width: 100px">名前</td>
+                                        <td class="form-inline">
+                                            <input type="text" class="form-control" name="name" id="j_school_name"/>
+                                            <span style="padding-left: 5px">中学校</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="50px" style="font-weight: bold; width: 100px">学期</td>
+                                        <td>
+                                            <label class="radio-inline radio_text" style="margin: 5px 0 0 7px">
+                                                <input type="radio" name="term" value="３学期制"> ３学期制
+                                            </label>
+                                            <label class="radio-inline radio_text" style="margin: 5px 0 0 30px">
+                                                <input type="radio" name="term" value="２学期制"> ２学期制
+                                            </label>
+                                            <!-- チェックボックスで選択された学校の種類がvalueに入る -->
+                                            <input type="hidden" name="school_kind" value=""/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <button class="btn btn-primary" style="margin: 10px 0 0 20px" id="l_school_register">
+                                    登録
+                                </button>
+                            </form>
+                        </div>
+                        <div class="row col-sm-10" style="margin-top: 30px; display: none" id="e_school">
+                            <div style="font-weight: bold">〔小学校の登録〕</div>
+                            <form method="post">
+                                {% csrf_token %}
+                                <table style="margin: 20px 0 0 30px">
+                                    <tr>
+                                        <td height="50px" style="font-weight: bold; width: 100px">名前</td>
+                                        <td class="form-inline">
+                                            <input type="text" class="form-control" name="name" id="e_school_name"/>
+                                            <span style="padding-left: 5px">小学校</span>
+                                            <!-- チェックボックスで選択された学校の種類がvalueに入る -->
+                                            <input type="hidden" name="school_kind" value=""/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <button class="btn btn-primary" style="margin: 10px 0 0 20px" id="l_school_register">
+                                    登録
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <p class="back-link footer">© 2019-2020 <a href="https://so-mei.info">So-mei</a> inc.</p>
+        </div>
+    </div>
+</div>
+
+<script src="{% static '/vendor/bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static '/vendor/datepicker/bootstrap-datepicker.js' %}"></script>
+<script src="{% static '/js/custom.js' %}"></script>
+<script src="{% static '/js/grade-term-select.js' %}"></script>
+<script src="{% static '/js/school-record-pulldown.js' %}"></script>
+<!-- select2 -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script defer="defer" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+{% include 'high_schools.html' %}
+<script src="{% static '/js/table-add.js' %}"></script>
+<!-- https://jqueryui.com/datepicker/ -->
+<!-- Datepicker を以下に配置すると動作する -->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="{% static '/vendor/datepicker/datePicker.js' %}"></script>
+<!-- jquery-validation -->
+
+<script src="{% static '/js/tab.js' %}"></script>
+<script src="{% static '/js/show-future-path-data.js' %}"></script>
+
+</body>
+</html>

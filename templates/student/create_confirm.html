@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="page-header">
+                <h1>生徒新規登録</h1>
+            </div>
+            <div class="page-header">
+                <h3>以下の内容で登録しますか？</h3>
+            </div>
+            <div class="container-fluid panel panel-container box">
+                <div class="row col-sm-12">
+                    <div class="col-lg-7 col-md-9">
+                        <table class="table table-hover">
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">生徒ID</th>
+                                <td style="text-align: left">{{ form.id.value }}</td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">名前
+                                    <span class="label label-danger must-label">必須</span>
+                                </th>
+                                <td style="text-align: left">
+                                    {{ form.last_name.value }} {{ form.first_name.value }}
+                                </td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">フリガナ
+                                    <span class="label label-danger must-label">必須</span>
+                                </th>
+                                <td style="text-align: left">
+                                    {{ form.last_ruby.value }} {{ form.first_ruby.value }}
+                                </td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">学年
+                                    <span class="label label-danger must-label">必須</span>
+                                </th>
+                                <td style="text-align: left">{{ form.grade.value }}</td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">校舎
+                                    <span class="label label-danger must-label">必須</span>
+                                </th>
+                                <td style="text-align: left">{{ form.school.value }}</td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">クラス</th>
+                                <td style="text-align: left">{{ form.home_room.value }}</td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">学校</th>
+                                <td style="text-align: left">{{ form.local_school.value }}</td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">入塾時期</th>
+                                <td style="text-align: left">{{ form.entry_grade.value }}</td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">誕生日</th>
+                                <td style="text-align: left">{{ form.birthday.value }}</td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">部活</th>
+                                <td style="text-align: left">{{ form.club.value }}</td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">両親</th>
+                                <td style="text-align: left">{{ form.parents.value }}</td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">兄弟姉妹</th>
+                                <td style="text-align: left">{{ form.siblings.value }}</td>
+                            </tr>
+                            <tr class="form-height">
+                                <th class="col-sm-3" style="text-align: left">共有情報</th>
+                                <td style="text-align: left">{{ form.info.value }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <br/><br/><br/>
+                <form action="{% url 'student:create' %}" method="POST">
+                    {% csrf_token %}
+                    {% for field in form %}{{ field.as_hidden }}{% endfor %}
+                    <a class="btn btn-default btn-lg" style="margin: 0 20px 0 20px; border-color: #9d9d9d"
+                       href="{% url 'student:create' grade %}">戻る</a>
+                    <button type="submit" class="btn btn-primary btn-lg" name="next" value="create">登録</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

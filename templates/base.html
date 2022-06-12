@@ -1,0 +1,222 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>聡明舎生徒管理システム</title>
+    <link href="{% static '/vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static '/vendor/datepicker/datepicker3.css' %}" rel="stylesheet">
+    <link href="{% static '/vendor/select2/css/select2.min.css' %}" rel="stylesheet">
+    <link href="{% static '/css/styles.css' %}" rel="stylesheet">
+    <link href="{% static '/css/home.css' %}" rel="stylesheet">
+    <link href="{% static '/css/numberList.css' %}" rel="stylesheet">
+    <link href="{% static '/css/checkboxRadiobox.css' %}" rel="stylesheet">
+    <link href="{% static '/css/table_border.css' %}" rel="stylesheet">
+    <link href="{% static '/css/student.css' %}" rel="stylesheet">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="{% static '/img/favicon/favicon/apple-icon-57x57.png' %}">
+    <link rel="apple-touch-icon" sizes="60x60" href="{% static '/img/favicon/apple-icon-60x60.png' %}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{% static '/img/favicon/apple-icon-72x72.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static '/img/favicon/apple-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{% static '/img/favicon/apple-icon-114x114.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static '/img/favicon/apple-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{% static '/img/favicon/apple-icon-144x144.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static '/img/favicon/apple-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static '/img/favicon/apple-icon-180x180.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192"  href="{% static '/img/favicon/android-icon-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static '/img/favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static '/img/favicon/favicon-96x96.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static '/img/favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static '/img/favicon/manifest.json' %}">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <!--Font-awesome-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!--Custom Font-->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet">
+    <!--Select2 Bootstrap Theme-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css"
+          rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="{% static '/js/html5shiv.min.js' %}"></script>
+    <script src="{% static '/js/respond.min.js' %}"></script>
+    <![endif]-->
+    <script src="{% static '/vendor/jquery/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static '/js/get-birthday.js' %}"></script>
+    <script src="{% static '/js/registry-sum-func.js' %}"></script>
+    <script src="{% static '/js/all-check.js' %}"></script>
+    <script src="{% static '/js/practice-exam-select.js' %}"></script>
+    <script src="{% static '/js/meeting-sheet-grade.js' %}"></script>
+    <script src="{% static '/js/registry-personal.js' %}"></script>
+    <script src="{% static '/js/zenken-select.js' %}"></script>
+
+    <script>
+        $(function ($) {
+            $('#register_new_school').on('click', function(){
+                console.log('do');
+                // 小学校数、中学校数を宣言。一時的に、絶対にありえない「-1」とする。
+                let now_num_e = -1;
+                let now_num_j = -1;
+                let school_name;
+                setTimeout(function run() {
+                    $.ajax({
+                        url: "{% url 'student:create_local_school_ajax' %}",
+                        method: "GET",
+                        // プレーンテキストを受信（他にはhtml、xml、script、json、jsonp等）
+                        dataType: 'json',
+                        // リクエストパラメータ
+                        data: {},
+                        timeout: 5000,
+                    })
+                        .done(function(data) {
+                            // 通信成功時の処理を記述
+                            if(now_num_e != -1 && now_num_e != data.elementary){
+                                // 小学校数が -1 でなく、１回前の数と合わない場合、データベースから最終idのものを取得
+                                $.ajax({
+                                    url: "{% url 'student:create_local_school_ajax' %}",
+                                    method: "GET",
+                                    // プレーンテキストを受信（他にはhtml、xml、script、json、jsonp等）
+                                    dataType: 'json',
+                                    // リクエストパラメータ
+                                    data: {'elementary': 'add'},
+                                    timeout: 5000,
+                                })
+                                    .done(function (data) {
+                                        // 名前を取得
+                                        school_name = data.name;
+                                        // selectのオプションに追加
+                                        $('#id_local_school').append(`<option value='${school_name}'>${school_name}</option>`);
+                                    })
+                            }
+                            if(now_num_j != -1 && now_num_j != data.junior){
+                                // 中学校数が -1 でなく、１回前の数と合わない場合、データベースから最終idのものを取得
+                                $.ajax({
+                                    url: "{% url 'student:create_local_school_ajax' %}",
+                                    method: "GET",
+                                    // プレーンテキストを受信（他にはhtml、xml、script、json、jsonp等）
+                                    dataType: 'json',
+                                    // リクエストパラメータ
+                                    data: {'junior': 'add'},
+                                    timeout: 5000,
+                                })
+                                    .done(function (data) {
+                                        // 名前を取得
+                                        school_name = data.name;
+                                        // selectのオプションに追加
+                                        $('#id_local_school').append(`<option value='${school_name}'>${school_name}</option>`);
+                                    })
+                            }
+                            console.log('GET処理成功');
+                            console.log(data.junior);
+                            console.log(data.elementary);
+                            now_num_j = data.junior;
+                            now_num_e = data.elementary;
+                            if(school_name) {
+                                console.log(`${school_name}を追加`);
+                                return false;
+                            } else {
+                                setTimeout(run, 2000);
+                            }
+                        })
+                        .fail(function() {
+                            // 通信失敗時の処理を記述
+                            console.log('GET処理失敗：');
+                            setTimeout(run, 2000);
+                        }, 2000);
+                })
+            });
+        })
+    </script>
+
+    <style type="text/css">
+        .jquery-error {
+            color:red;
+            font-weight: normal;
+        }
+    </style>
+
+</head>
+<body>
+<!-- ===== ヘッダー（ナビゲーションバー） =====  -->
+<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#sidebar-collapse"><span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span></button>
+            <a class="navbar-brand" href="{% url 'home:home' %}">聡明舎 生徒管理システム</a>
+            <form method="post" action="{% url 'home:logout' %}">
+                {% csrf_token %}
+                <button class="btn btn-link pull-right navbar-brand" type="submit">ログアウト</button>
+            </form>
+        </div>
+    </div><!-- /.container-fluid -->
+</nav>
+<!-- ===== サイドバー =====  -->
+<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+    <div class="profile-sidebar">
+        <div class="profile-usertitle">
+            <div class="profile-usertitle-name">{{ user }}さん</div>
+            <div class="profile-usertitle-status"><span class="indicator label-success"></span>Online</div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="divider"></div>
+    <ul class="nav menu">
+        <li role="presentation"><a href="{% url 'home:home' %}"><i class="fa fa-home"></i>&nbsp; HOME</a></li>
+        <li role="presentation"><a href="{% url 'student:list' %}1"><i class="fa fa-list-alt"></i>&nbsp;
+            生徒一覧</a></li>
+        <li role="presentation"><a href="{% url 'student:create' %}"><i class="fa fa-edit"></i>&nbsp; 新規登録</a></li>
+        <li role="presentation"><a href="{% url 'student:class' %}"><i class="fa fa-users"></i>&nbsp; クラス管理</a></li>
+        <li role="presentation"><a href="{% url 'registry:home' %}"><i class="fa fa-server "></i> &nbsp;
+            各種登録</a></li>
+        <li role="presentation"><a href="{% url 'zenken:top' %}"><i class="fa fa-file-text-o"></i>&nbsp; 全県模試一括</a></li>
+        <li role="presentation"><a href="{% url 'download:home' %}"><i class="fa fa-download"></i>&nbsp; ダウンロード</a></li>
+        <li role="presentation" sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{'/admin'}"><i class="fa fa-user"></i>&nbsp; ユーザー管理</a>
+        </li>
+    </ul>
+</div><!--/.sidebar-->
+<!-- ===== コンテンツ ===== -->
+<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+    <div class="row">
+        <div class="col-sm-12 content">
+            {% block content %} {% endblock %}
+        </div>
+        <div class="col-sm-12">
+            <p class="back-link footer">© 2019-2020 <a href="https://so-mei.info">So-mei</a> inc.</p>
+        </div>
+    </div><!--/.row-->
+</div>    <!--/.main-->
+
+<script src="{% static '/vendor/bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static '/vendor/datepicker/bootstrap-datepicker.js' %}"></script>
+<script src="{% static '/js/custom.js' %}"></script>
+<script src="{% static '/js/grade-term-select.js' %}"></script>
+<script src="{% static '/js/school-record-pulldown.js' %}"></script>
+<!-- select2 -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script defer="defer" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+{% include 'high_schools.html' %}
+<script src="{% static '/js/table-add.js' %}"></script>
+<!-- https://jqueryui.com/datepicker/ -->
+<!-- Datepicker を以下に配置すると動作する -->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="{% static '/vendor/datepicker/datePicker.js' %}"></script>
+<!-- jquery-validation -->
+
+<script src="{% static '/js/tab.js' %}"></script>
+<script src="{% static '/js/show-future-path-data.js' %}"></script>
+
+</body>
+</html>

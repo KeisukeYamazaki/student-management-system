@@ -1,0 +1,47 @@
+<script>
+    $(document).ready(function () {
+        let inputData1 = [
+            {id: "0", text: "-未選択-"},
+            {% for school in public_high_schools %}
+                {id: "{{ school.id }}", text: "{{ school.name }}"},
+            {% endfor %}
+        ];
+        let inputData2 = [
+            {id: "0", text: "-未選択-"},
+            {% for school in private_high_schools %}
+                {id: "{{ school.id }}", text: "{{ school.name }} {{ school.course }}"},
+            {% endfor %}
+        ];
+
+        let public_selectors = '#first_choice, #second_choice, #third_choice'
+        let private_selectors = '#private_school1, #private_school2, #private_school3, ' +
+                                '#private_school4, #private_school5';
+
+        // 特定のセレクターにselect2を適用する
+        $(public_selectors).select2({
+            data: inputData1,
+            width: 200,
+            theme: "bootstrap"
+        });
+        $(private_selectors).select2({
+            data: inputData2,
+            width: 200,
+            theme: "bootstrap"
+        });
+
+        // 登録されている高校idに対応する高校を表示させる
+        let future_path_ids = [
+            {{ future_path.first_choice.id }},
+            {{ future_path.second_choice.id }},
+            {{ future_path.third_choice.id }},
+            {{ future_path.private_school1.id }},
+            {{ future_path.private_school2.id }},
+            {{ future_path.private_school3.id }},
+        ]
+        let selectors = `${public_selectors}, ${private_selectors}`
+        let selector_list = selectors.split(', ')
+        for (let i = 0; i < future_path_ids.length; i++){
+            $(selector_list[i]).val(future_path_ids[i]).trigger("change");
+        }
+    });
+</script>

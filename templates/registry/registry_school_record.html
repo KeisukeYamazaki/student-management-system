@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="page-header" style="margin-bottom: 15px">
+        <h1>各種登録</h1>
+        <p style="margin-left: 3px">このページで成績、試験結果などを登録できます</p>
+    </div>
+    {% if messages %}
+        <div class="row col-sm-12">
+            <ul class="list-unstyled">
+                {% for message in messages %}
+                    <li{% if message.tags %}
+                        class="bg-{% if message.tags == 'error' %}danger{% else %}info{% endif %} alert"{% endif %}>
+                        {{ message }}
+                        <button type="button" class="close" aria-label="Close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="row col-sm-10">
+        <div class="btn-group btn-group-justified" role="group" style="margin-bottom: 10px">
+            <a type="button" class="btn btn-primary" href="{% url 'registry:school-record' %}"
+               style="border-color: white">成績
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:regular-exam' %}"
+               style="border-color: white">定期試験
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:practice-exam' %}"
+               style="border-color: white">模擬試験
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:personal' %}"
+               style="border-color: white">個人登録
+            </a>
+        </div>
+    </div>
+
+    <div class="panel panel-container col-sm-12" style="margin-top: 15px; padding: 20px">
+        <div class="col-sm-12" style="margin-bottom: 15px">登録したい学年と学期を選択してください。</div>
+        <div class="form-group">
+            <table class="col-lg-7 col-md-9" style="margin: 0 30px 20px 0">
+                <tr>
+                    <td style="text-align: center; font-weight: bold">現在</td>
+                    <td>
+                        <select class="form-control record_select" id="now_grade">
+                            <option value="">学年</option>
+                            <option value="j3"{% if now == 'j3' %} selected {% endif %}>中３</option>
+                            <option value="j2"{% if now == 'j2' %} selected {% endif %}>中２</option>
+                            <option value="j1"{% if now == 'j1' %} selected {% endif %}>中１</option>
+                        </select>
+                    </td>
+                    <td></td>
+                    <td style="text-align: center; font-weight: bold"> の</td>
+                    <td style="width: 20%">
+                        <select class="form-control record_select" id="show_grade" >
+                            <option value="">学年</option>
+                            <option value="j3">中３</option>
+                            <option value="j2">中２</option>
+                            <option value="j1">中１</option>
+                        </select>
+                        <input type="hidden" id="sent_grade" value="{{ grade }}">
+                    </td>
+                    <td></td>
+                    <td style="width: 25%">
+                        <select class="form-control record_select" id="term">
+                            <option value="">学期</option>
+                            <option value=1>１学期・前期</option>
+                            <option value=2>２学期</option>
+                            <option value=3>３学期・後期</option>
+                            <option value=4>２学期・後期</option>
+                        </select>
+                        <input type="hidden" id="sent_term" value="{{ term_num }}">
+                    </td>
+                    <td><div style="margin-left: 10px; font-weight: bold">の内申</div></td>
+                </tr>
+            </table>
+            <a href="" class="btn btn-primary" id="record_grade_term_show" style="margin-left: 60px">表示</a>
+            {% if objects %}
+                <form method="post">
+                    {% csrf_token %}
+                    <table class="table table-bordered table-hover" style="margin-bottom: 20px">
+                        <tr>
+                            <th class="info" style="font-size: small">生徒名</th>
+                            <th class="info" style="font-size: small">学年</th>
+                            <th class="info" style="font-size: small">年度<p style="font-size: x-small">※ 半角数字4ケタ</p></th>
+                            <th class="info" style="font-size: small">学期</th>
+                            <th class="info" style="font-size: small">英語<p style="font-size: x-small">※ 半角数字</p></th>
+                            <th class="info" style="font-size: small">数学<p style="font-size: x-small">※ 半角数字</p></th>
+                            <th class="info" style="font-size: small">国語<p style="font-size: x-small">※ 半角数字</p></th>
+                            <th class="info" style="font-size: small">理科<p style="font-size: x-small">※ 半角数字</p></th>
+                            <th class="info" style="font-size: small">社会<p style="font-size: x-small">※ 半角数字</p></th>
+                            <th class="info" style="font-size: small">音楽<p style="font-size: x-small">※ 半角数字</p></th>
+                            <th class="info" style="font-size: small">美術<p style="font-size: x-small">※ 半角数字</p></th>
+                            <th class="info" style="font-size: small">保体<p style="font-size: x-small">※ 半角数字</p></th>
+                            <th class="info" style="font-size: small">技家<p style="font-size: x-small">※ 半角数字</p></th>
+                        </tr>
+                        {% for student in objects %}
+                            <tr>
+                                <input type="hidden" name="id" value="{{ student.record_id | default:'' }}">
+                                <input type="hidden" name="last_name" value="{{ student.last_name }}">
+                                <input type="hidden" name="first_name" value="{{ student.first_name }}">
+                                <input type="hidden" name="student_id" value="{{ student.student_id }}">
+                                <input type="hidden" name="grade" value="{{ large_grade }}">
+                                <td>{{ student.last_name }} {{ student.first_name }}</td>
+                                <td>{{ large_grade }}</td>
+                                <td style="width: 10%">
+                                    <input type="text" class="form-control" name="record_year"
+                                           value="{{ student.record_year | default:year }}">
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <select name="term_name" class="form-control">
+                                            <option value="">学期</option>
+                                            {% if term == '１学期・前期' %}
+                                                <option value=1 {% if student.term == '３学期制' %} selected{% endif %}>
+                                                    １学期
+                                                </option>
+                                                <option value=2 {% if student.term == '２学期制' %} selected{% endif %}>
+                                                    前期
+                                                </option>
+                                            {% elif term == '２学期' %}
+                                                <option value=3 selected>
+                                                    ２学期
+                                                </option>
+                                            {% elif term == '３学期・後期'%}
+                                                <option value=5 {% if student.term == '３学期制' %} selected{% endif %}>
+                                                    ３学期
+                                                </option>
+                                                <option value=4 {% if student.term == '２学期制' %} selected{% endif %}>
+                                                    後期
+                                                </option>
+                                            {% elif term == '２学期・後期' %}
+                                                <option value=3 {% if student.term == '３学期制' %} selected{% endif %}>
+                                                    ２学期
+                                                </option>
+                                                <option value=4 {% if student.term == '２学期制' %} selected{% endif %}>
+                                                    後期
+                                                </option>
+                                            {% endif %}
+                                        </select>
+                                    </div>
+                                </td>
+                                <td style="width: 7%">
+                                    <input type="text" class="form-control five{{ forloop.counter0 }} sum"
+                                           name="english" value="{{ student.english | default:'' }}">
+                                </td>
+                                <td style="width: 7%">
+                                    <input type="text" class="form-control five{{ forloop.counter0 }} sum"
+                                           name="math" value="{{ student.math | default:'' }}">
+                                </td>
+                                <td style="width: 7%">
+                                    <input type="text" class="form-control five{{ forloop.counter0 }} sum"
+                                           name="japanese" value="{{ student.japanese | default:'' }}">
+                                </td>
+                                <td style="width: 7%">
+                                    <input type="text" class="form-control five{{ forloop.counter0 }} sum"
+                                           name="science" value="{{ student.science | default:'' }}">
+                                </td>
+                                <td style="width: 7%">
+                                    <input type="text" class="form-control five{{ forloop.counter0 }} sum"
+                                           name="social_studies" value="{{ student.social_studies | default:'' }}">
+                                </td>
+                                <td style="width: 7%">
+                                    <input type="text" class="form-control all{{ forloop.counter0 }} sum"
+                                           name="music" value="{{ student.music | default:'' }}">
+                                </td>
+                                <td style="width: 7%">
+                                    <input type="text" class="form-control all{{ forloop.counter0 }} sum"
+                                           name="art" value="{{ student.art | default:'' }}">
+                                </td>
+                                <td style="width: 7%">
+                                    <input type="text" class="form-control all{{ forloop.counter0 }} sum"
+                                           name="pe" value="{{ student.pe | default:'' }}">
+                                </td>
+                                <td style="width: 7%">
+                                    <input type="text" class="form-control all{{ forloop.counter0 }} sum"
+                                           name="tech_home" value="{{ student.tech_home | default:'' }}">
+                                </td>
+                                <input type="hidden" id="sum_five{{ forloop.counter0 }}" name="sum_five" value="">
+                                <input type="hidden" id="sum_all{{ forloop.counter0 }}" name="sum_all" value="">
+                                <div class="counter" style="display: none"></div>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <button type="submit" class="btn btn-primary">登録</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

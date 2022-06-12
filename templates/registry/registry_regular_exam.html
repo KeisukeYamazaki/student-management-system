@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="page-header" style="margin-bottom: 15px">
+        <h1>各種登録</h1>
+        <p style="margin-left: 3px">このページで成績、試験結果などを登録できます</p>
+    </div>
+    {% if messages %}
+        <div class="row col-sm-12">
+            <ul class="list-unstyled">
+                {% for message in messages %}
+                    <li{% if message.tags %}
+                        class="bg-{% if message.tags == 'error' %}danger{% else %}info{% endif %} alert"{% endif %}>
+                        {{ message }}
+                        <button type="button" class="close" aria-label="Close" data-dismiss="alert">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="row col-sm-10">
+        <div class="btn-group btn-group-justified" role="group" style="margin-bottom: 10px">
+            <a type="button" class="btn btn-primary" href="{% url 'registry:school-record' %}"
+               style="border-color: white">成績
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:regular-exam' %}"
+               style="border-color: white">定期試験
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:practice-exam' %}"
+               style="border-color: white">模擬試験
+            </a>
+            <a type="button" class="btn btn-primary" href="{% url 'registry:personal' %}"
+               style="border-color: white">個人登録
+            </a>
+        </div>
+    </div>
+    <div class="panel panel-container col-sm-10 container-style" style="padding: 30px">
+        <form method="post">
+            {% csrf_token %}
+            <h4 style="margin-top: 0px"><b>1.　手動で登録する場合(今すぐ最新の結果を登録したいときはこちら)</b></h4>
+            <div class="form-inline" style="padding-top: 10px">
+                <label class="label" style="color: #5e5e5e; font-size: small">ワークシート名：</label>
+                <select class="form-control" name="test_kind">
+                    <option value="">選択</option>
+{#                    <option value="１学期中間">１学期中間</option>#}
+{#                    <option value="１学期期末・前期中間">１学期期末・前期中間</option>#}
+                    <option value="１学期期末・前期中間">１学期定期試験</option>
+                    <option value="２学期中間・前期期末">２学期中間（９月）</option>
+                    <option value="２学期期末・後期中間">定期試験結果（11月）</option>
+                    <option value="学年末">学年末</option>
+                </select>
+            </div>
+            <div style="margin: 20px 0 10px 0">
+                <img src="{% static '/img/worksheet.jpg' %}" style="width: 450px">
+                <p style="margin-top: 10px">※ ワークシート名には、当該試験の名前(画像の赤枠の部分の名前)を選んでください。</p>
+                <p style="margin-left: 12px">選択したワークシート名と実際のワークシート名が異なると登録できないので、ご注意ください。</p>
+            </div>
+            <button class="btn btn-primary" type="submit" style="margin-top: 5px" name="button" value="registry">
+                登録
+            </button>
+        </form>
+        <hr/>
+        <form method="post">
+            {% csrf_token %}
+            <h4><b>2.　自動で登録する場合</b></h4>
+            <p>※ 下のフォームで期限を設定すると、設定した日から期限まで間、当該のシートから自動で点数を登録していきます。</p>
+            <table style="margin: 15px 0px; color: #5e5e5e;">
+                <tr>
+                    <td style="font-weight: bold" width="150" height="50">ワークシート名：</td>
+                    <td>
+                        <select class="form-control" name="test_kind">
+                            <option value="">選択</option>
+{#                            <option value="１学期中間">１学期中間</option>#}
+{#                            <option value="１学期期末・前期中間">１学期期末・前期中間</option>#}
+                            <option value="１学期期末・前期中間">１学期定期試験</option>
+                            <option value="２学期中間・前期期末">２学期中間・後期期末</option>
+                            <option value="２学期期末・後期中間">２学期中間・後期期末</option>
+                            <option value="学年末">学年末</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold" width="150" height="50">設定期限：</td>
+                    <td>
+                        <input style="width: 200px" class="form-control" type="text" id="datepicker" name="date">
+                    </td>
+                </tr>
+            </table>
+            <button class="btn btn-primary" type="submit" style="margin-top: 5px" name="button" value="limit">
+                期限を設定
+            </button>
+        </form>
+        {% if test_kind %}
+            <div style="margin-top: 20px">
+                <div>＜自動登録の期限が設定されています＞</div>
+                <table style="margin: 5px 0">
+                    <tr>
+                        <td style="width: 120px; height: 30px">試験名：</td>
+                        <td>{{ test_kind }}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 120px; height: 30px">自動登録期限：</td>
+                        <td>{{ limit_date }}</td>
+                    </tr>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
